@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSA Progression ARC™ — Cognitive Systems Academy</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#030610;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+canvas{display:block;width:100%;height:100%}
+#shields{position:absolute;top:14px;left:14px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.shield{display:flex;align-items:center;gap:8px;background:rgba(5,10,18,.82);border:1px solid rgba(255,255,255,.06);border-radius:9px;padding:5px 10px;backdrop-filter:blur(12px)}
+.sh-dot{font-size:10px;font-weight:700;color:#fff;background:rgba(255,255,255,.18);border-radius:5px;padding:3px 7px;letter-spacing:.04em;white-space:nowrap}
+.sh-name{font-size:11px;font-weight:600;color:#d8e8f4;letter-spacing:.03em;display:block}
+.sh-sub{font-size:9px;color:#6a8aaa;letter-spacing:.02em;display:block}
+#hint{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:11px;color:#3a5570;letter-spacing:.08em;text-transform:uppercase;transition:opacity 1.2s;pointer-events:none;white-space:nowrap}
+#watermark{position:absolute;bottom:56px;right:14px;text-align:right;pointer-events:none}
+.wm1{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#00c8b4;opacity:.85}
+.wm2{font-size:9px;color:#8aA4ba;letter-spacing:.04em;opacity:.75;margin-top:2px}
+.wm3{font-size:8px;color:#5a7a9a;letter-spacing:.04em;opacity:.65;margin-top:2px}
+/* legend */
+#legend{position:absolute;bottom:0;left:0;right:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start;gap:6px 20px;pointer-events:none;padding:10px 18px 12px;background:linear-gradient(to top,rgba(3,6,16,.95) 65%,rgba(3,6,16,0));}
+#legend-competency{position:absolute;left:26px;bottom:108px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;pointer-events:none;max-width:240px;z-index:3}
+.leg-group{display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap}
+.leg-group--programmes{min-width:0}
+.leg-group--effects{min-width:0}
+.leg-group--competencies{min-width:0;max-width:240px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.leg-group--milestones{min-width:0}
+.leg{display:flex;align-items:center;gap:8px;font-size:12px;color:#a8c0d4;letter-spacing:.03em;font-weight:600}
+.leg-swatch{width:24px;height:3px;border-radius:2px;flex-shrink:0}
+.leg-sub{font-size:9px;color:#5a7a9a;letter-spacing:.03em;white-space:nowrap;font-weight:500}
+.leg-sep{width:1px;height:20px;background:rgba(255,255,255,.20);margin:0 2px;flex-shrink:0}
+.leg-effect{color:#90b0c8;font-weight:600}
+.leg-icon{width:16px;text-align:center;font-size:12px;flex-shrink:0;line-height:1}
+.leg-lvl{color:#5a8aaa;font-size:9.5px;margin-left:3px;font-weight:600}
+.leg-section-label{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#3a5a78;display:block;margin-bottom:1px;padding-bottom:3px;border-bottom:1px solid rgba(255,255,255,.07);width:100%}
+.leg-col{display:flex;flex-direction:column;gap:4px}
+/* arc product name — centred above legend */
+#arc-name{position:absolute;bottom:92px;left:50%;transform:translateX(-50%);pointer-events:none;text-align:center;white-space:nowrap;z-index:4;max-width:calc(100vw - 280px);overflow:hidden}
+.arc-main{font-size:16px;font-weight:800;letter-spacing:.20em;text-transform:uppercase;color:#00C8B4;opacity:.95;text-shadow:0 0 28px rgba(0,200,180,.70),0 0 60px rgba(0,200,180,.30),0 2px 4px rgba(0,0,0,.60);white-space:nowrap}
+.arc-sub{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#6a9ab4;opacity:.80;margin-top:4px;white-space:nowrap}
+#input-toggle{position:absolute;top:14px;right:14px;background:rgba(232,85,62,.10);border:1px solid rgba(232,85,62,.30);color:#E8553E;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:background .2s;font-family:inherit;backdrop-filter:blur(8px);min-height:38px;touch-action:manipulation}
+#input-toggle:hover{background:rgba(232,85,62,.20)}
+/* drawer */
+#input-drawer{position:absolute;top:56px;right:14px;background:rgba(5,10,18,.97);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px;width:min(290px,calc(100vw - 28px));opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;transform:translateY(-8px) scale(.97);backdrop-filter:blur(16px);max-height:calc(100dvh - 76px);overflow-y:hidden;display:flex;flex-direction:column}
+#input-drawer.open{opacity:1;pointer-events:all;transform:none}
+.drawer-title{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#7a94aa;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+.inp-sep{height:1px;background:rgba(255,255,255,.06);margin:6px 0}
+.inp-bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:5px;overflow:hidden}
+.inp-bar-fill{height:100%;border-radius:2px;transition:width .3s}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.10);border-radius:2px;outline:none;margin:6px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac,#E8553E);cursor:pointer;touch-action:manipulation}
+/* programme blocks */
+.prog-block{margin-bottom:2px}
+.prog-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;min-height:36px}
+.prog-check-label{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.prog-checkbox{display:none}
+.prog-check-box{width:20px;height:20px;border:2px solid var(--pc);border-radius:5px;display:inline-block;flex-shrink:0;transition:background .15s;position:relative}
+.prog-checkbox:checked+.prog-check-box{background:var(--pc)}
+.prog-checkbox:checked+.prog-check-box::after{content:'✓';position:absolute;top:-1px;left:3px;font-size:13px;color:#fff;font-weight:700}
+.prog-check-label span:last-child{font-size:13px}
+.year-sel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#c0cedc;font-size:13px;padding:7px 28px 7px 10px;cursor:pointer;font-family:inherit;outline:none;flex:1;min-width:0;min-height:36px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238ba3bf' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.year-sel:disabled{opacity:0.30;cursor:default}
+.year-sel option{background:#0c1828;font-size:13px}
+.prog-slider-wrap{transition:opacity .2s}
+.apply-btn{width:100%;background:rgba(232,85,62,.12);border:1px solid rgba(232,85,62,.30);color:#E8553E;border-radius:9px;padding:12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;font-family:inherit;letter-spacing:.04em;min-height:44px;touch-action:manipulation}
+.apply-btn:hover{background:rgba(232,85,62,.22)}
+.apply-btn:active{background:rgba(232,85,62,.30)}
+.revert-btn{width:100%;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);color:#F5A623;border-radius:9px;padding:10px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s,opacity .2s;font-family:inherit;letter-spacing:.04em;min-height:40px;touch-action:manipulation;margin-top:6px}
+.revert-btn:hover{background:rgba(245,166,35,.18)}
+.revert-btn:disabled{opacity:0.28;cursor:default}
+#unsaved-badge{display:none;font-size:9px;font-weight:700;letter-spacing:.06em;color:#F5A623;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.30);border-radius:5px;padding:2px 7px;text-align:center;margin-bottom:6px;text-transform:uppercase}
+/* wire tip */
+#wire-tip{position:absolute;background:rgba(5,10,18,.92);border:1px solid rgba(255,255,255,.07);border-left-width:2px;border-radius:10px;padding:10px 13px;width:190px;opacity:0;transition:opacity .18s;pointer-events:none;backdrop-filter:blur(10px)}
+.wt-label{font-size:9px;letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px;opacity:.55}
+.wt-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.wt-val{font-size:12px;margin-bottom:8px;opacity:.60}
+.wt-bg{height:3px;background:rgba(255,255,255,.08);border-radius:2px}
+.wt-fill{height:100%;border-radius:2px;transition:width .4s}
+/* node label */
+#node-label{position:absolute;background:rgba(5,10,18,.92);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 13px;width:170px;opacity:0;transition:opacity .18s;pointer-events:none;backdrop-filter:blur(10px)}
+.nl-name{font-size:14px;font-weight:700;margin-bottom:6px;color:#fff}
+.nl-row{display:flex;justify-content:space-between;gap:14px;margin-bottom:4px}
+.nl-k{font-size:10px;color:#5a7490;letter-spacing:.05em;text-transform:uppercase}
+.nl-v{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.nl-hint{font-size:9px;color:#243040;margin-top:7px;text-align:right}
+/* panel */
+#panel-overlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;background:rgba(2,5,12,.78)}
+#panel-overlay.open{opacity:1;pointer-events:all}
+#panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.95);pointer-events:none;opacity:0;transition:opacity .25s,transform .28s cubic-bezier(.34,1.3,.64,1);background:#0b1828;border:1px solid rgba(0,200,180,.14);border-radius:16px;padding:22px 26px;width:min(460px,92vw);max-height:88dvh;overflow-y:auto}
+#panel.open{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all}
+#panel-close,#close-btn{position:absolute;top:12px;right:14px;background:none;border:none;cursor:pointer;color:#243040;font-size:18px;line-height:1;transition:color .2s}
+#panel-close:hover,#close-btn:hover{color:#e8f0fe}
+#p-title{font-size:16px;font-weight:600;margin-bottom:2px}
+#p-sub{font-size:11px;color:#364a5e;letter-spacing:.03em;margin-bottom:18px}
+.p-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.p-stat{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:10px;text-align:center}
+.p-stat .n{font-size:18px;font-weight:700;margin-bottom:2px;font-variant-numeric:tabular-nums}
+.p-stat .l{font-size:9px;color:#364a5e;letter-spacing:.05em;text-transform:uppercase}
+.p-bar-row{margin-bottom:10px}
+.p-bar-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px}
+.p-bar-label .nm{color:#7a94aa}
+.p-bar-label .vl{font-weight:600;font-variant-numeric:tabular-nums}
+.p-track{height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.p-fill{height:100%;border-radius:3px;width:0;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.p-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.p-tag{font-size:10px;font-weight:600;padding:4px 9px;border-radius:20px;border:1px solid transparent;letter-spacing:.03em}
+@media(max-width:480px){
+  #input-drawer{width:calc(100vw - 20px);right:10px;top:52px;padding:12px 13px;border-radius:12px}
+  .p-stat-grid{grid-template-columns:repeat(2,1fr)}
+  /* legend: single row, programmes only — hide effects & achievements cols to prevent tall wrap */
+  #legend{padding:6px 12px 8px;gap:4px 10px;flex-wrap:nowrap;align-items:center}
+  #legend .leg-col:nth-child(3),
+  #legend .leg-col:nth-child(5),
+  #legend .leg-sep{display:none}
+  .leg-group--programmes{display:flex;flex-direction:row;gap:8px;flex-wrap:nowrap}
+  .leg{font-size:10px}
+  .leg-icon{font-size:11px}
+  .leg-col{gap:2px}
+  #shields{top:10px;left:10px;gap:4px}
+  .shield{padding:4px 8px}
+  .sh-name{font-size:10px}
+  #watermark{bottom:38px;right:10px}
+  .wm2{display:none}
+  #hint{display:none}
+  #input-toggle{top:10px;right:10px;padding:8px 12px;font-size:11px}
+  /* arc name sits above the compact legend bar (~44px tall) */
+  #arc-name{bottom:50px;max-width:calc(100vw - 32px)}
+  .arc-main{font-size:12px;letter-spacing:.14em}
+  .arc-sub{display:none}
+  /* competency legend: hide on mobile — too tall for narrow screens */
+  #legend-competency{display:none}
+}
+@media(max-width:380px){
+  #legend{display:none}
+  #legend-competency{display:none}
+  #arc-name{display:none}
+  #shields .shield:last-child{display:none}
+  #watermark{bottom:10px}
+}
+/* ── competency panel ── */
+.comp-tab{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:7px 0 5px;user-select:none;-webkit-user-select:none}
+.comp-tab-label{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7a94aa}
+.comp-chevron{font-size:10px;color:#4a6a8a;transition:transform .2s}
+.comp-chevron.open{transform:rotate(180deg)}
+#comp-body{display:none;padding-top:4px}
+.comp-row{margin-bottom:8px}
+.comp-label{display:flex;justify-content:space-between;font-size:9px;color:#8ba3bf;margin-bottom:3px}
+.comp-score{font-weight:700;font-size:9px}
+.comp-stars{display:flex;gap:3px;margin-bottom:2px}
+.comp-star{width:22px;height:22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:background .15s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.comp-star.lit{background:rgba(0,200,180,.15);border-color:rgba(0,200,180,.35)}
+.comp-comment{width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;color:#c0cedc;font-size:10px;padding:5px 7px;font-family:inherit;outline:none;resize:none;margin-top:2px}
+.comp-comment:focus{border-color:rgba(0,200,180,.30)}
+/* ── parent view badge ── */
+#parent-badge{display:none;position:absolute;top:14px;right:14px;background:rgba(0,200,180,.10);border:1px solid rgba(0,200,180,.28);border-radius:9px;padding:7px 13px;pointer-events:none;backdrop-filter:blur(10px)}
+#parent-badge .pb-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4a8a80;display:block;margin-bottom:2px}
+#parent-badge .pb-name{font-size:13px;font-weight:700;color:#00C8B4}
+/* ── PIN gate modal ── */
+#pin-gate{display:none;position:fixed;inset:0;background:rgba(2,5,12,.96);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#pin-gate.show{display:flex}
+.pg-title{font-size:16px;font-weight:700;color:#00C8B4;letter-spacing:.05em}
+.pg-sub{font-size:11px;color:#4a6a8a;text-align:center;max-width:260px;line-height:1.6}
+.pg-input{background:rgba(255,255,255,.08);border:1px solid rgba(0,200,180,.30);border-radius:10px;color:#fff;font-size:22px;text-align:center;padding:12px 20px;width:180px;letter-spacing:.3em;font-family:inherit;outline:none}
+.pg-input:focus{border-color:rgba(0,200,180,.65)}
+.pg-btn{background:rgba(0,200,180,.14);border:1px solid rgba(0,200,180,.35);color:#00C8B4;border-radius:9px;padding:11px 32px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.pg-btn:hover{background:rgba(0,200,180,.25)}
+.pg-err{font-size:11px;color:#E8553E;min-height:16px;text-align:center}
+/* demo mode label */
+#demo-badge{display:none;position:absolute;top:14px;right:14px;background:rgba(245,166,35,.10);border:1px solid rgba(245,166,35,.28);border-radius:9px;padding:7px 13px;pointer-events:none}
+#demo-badge span{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#F5A623}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div id="shields">
+  <div class="shield"><div class="sh-dot">K12</div><div class="sh-text"><span class="sh-name">K–12 CS Framework</span><span class="sh-sub">ACM · Code.org · CSTA · NMSI</span></div></div>
+  <div class="shield"><div class="sh-dot">CSA</div><div class="sh-text"><span class="sh-name">CSA Progression ARC™</span><span class="sh-sub">L1–L6 · DSA portfolio · PSLE pathway</span></div></div>
+  <div class="shield"><div class="sh-dot">MIT</div><div class="sh-text"><span class="sh-name">MIT App Inventor · Scratch</span><span class="sh-sub">MIT Media Lab · Lifelong Kindergarten</span></div></div>
+</div>
+<div id="hint">hover spine · click nodes to expand</div>
+<button id="input-toggle">✎ Teacher Input</button>
+<div id="pin-gate">
+  <div class="pg-title">🔒 Student Access</div>
+  <div class="pg-sub">Enter the access code provided by your teacher to view this student's progress.</div>
+  <input class="pg-input" id="pin-input" type="password" maxlength="8" placeholder="••••" autocomplete="off">
+  <button class="pg-btn" id="pin-submit">View Progress</button>
+  <div class="pg-err" id="pin-err"></div>
+</div>
+<div id="demo-badge"><span>⚡ Demo Mode</span></div>
+<div id="parent-badge">
+  <span class="pb-label">📊 Viewing progress</span>
+  <span class="pb-name" id="pb-name">—</span>
+</div>
+<div id="input-drawer">
+  <!-- FIXED HEADER — always visible -->
+  <div class="drawer-title">🎯 Programme Setup
+    <div style="font-size:9px;font-weight:400;color:#4a6a8a;margin-top:2px;letter-spacing:0">Enrol student · set level · adjust XP</div>
+  </div>
+  <!-- Airtable config (hidden by default) -->
+  <div id="at-config" style="display:none;margin-bottom:8px">
+    <input id="at-token" placeholder="Airtable API token" autocomplete="off" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:7px;color:#c0cedc;font-size:11px;padding:6px 8px;font-family:inherit;outline:none;margin-bottom:5px">
+    <input id="at-base" placeholder="Base ID  (appXXXXXXXX)" autocomplete="off" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:7px;color:#c0cedc;font-size:11px;padding:6px 8px;font-family:inherit;outline:none;margin-bottom:5px">
+    <button id="at-save-config" style="width:100%;background:rgba(0,200,180,.10);border:1px solid rgba(0,200,180,.25);color:#00c8b4;border-radius:7px;padding:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">Save Config</button>
+  </div>
+  <!-- Student selector -->
+  <div style="margin-bottom:8px">
+    <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
+      <select id="student-sel" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:7px;color:#c0cedc;font-size:12px;padding:5px 8px;font-family:inherit;outline:none;min-height:32px">
+        <option value="">— Select student —</option>
+      </select>
+      <button id="at-settings-btn" title="Airtable settings" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:7px;color:#4a6a8a;font-size:13px;width:30px;height:30px;cursor:pointer;flex-shrink:0">⚙</button>
+    </div>
+    <div id="at-status" style="font-size:9px;color:#4a6a8a;min-height:12px"></div>
+  </div>
+  <div class="inp-sep"></div>
+  <!-- SCROLLABLE MIDDLE — programme blocks -->
+  <div style="overflow-y:auto;flex:1;min-height:0">
+    <!-- AI CODING -->
+    <div class="prog-block">
+      <div class="prog-header">
+        <label class="prog-check-label">
+          <input type="checkbox" id="enrol-ai" class="prog-checkbox">
+          <span class="prog-check-box" style="--pc:#E8553E"></span>
+          <span style="color:#E8553E;font-weight:700;font-size:12px">🤖 AI Coding</span>
+        </label>
+        <select class="year-sel" id="year-ai" disabled>
+          <option value="1">L1</option><option value="2">L2</option><option value="3">L3</option>
+          <option value="4">L4</option><option value="5">L5</option><option value="6">L6</option><option value="7">L7</option>
+        </select>
+      </div>
+      <div class="prog-slider-wrap" id="ai-slider-wrap" style="opacity:0.3;pointer-events:none">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:#8ba3bf;margin-bottom:3px">
+          <span>XP</span><span id="ai-val" style="color:#E8553E;font-weight:700">0 XP</span>
+        </div>
+        <input type="range" id="ai-inp" min="0" max="1400" step="10" value="0" style="--ac:#E8553E">
+        <div class="inp-bar-bg"><div class="inp-bar-fill" id="ai-bar" style="background:#E8553E;width:0%"></div></div>
+      </div>
+    </div>
+    <div class="inp-sep"></div>
+    <!-- ROBOTICS -->
+    <div class="prog-block">
+      <div class="prog-header">
+        <label class="prog-check-label">
+          <input type="checkbox" id="enrol-rob" class="prog-checkbox">
+          <span class="prog-check-box" style="--pc:#F5A623"></span>
+          <span style="color:#F5A623;font-weight:700;font-size:12px">🦾 Robotics</span>
+        </label>
+        <select class="year-sel" id="year-rob" disabled>
+          <option value="1">L1</option><option value="2">L2</option><option value="3">L3</option>
+          <option value="4">L4</option><option value="5">L5</option><option value="6">L6</option><option value="7">L7</option>
+        </select>
+      </div>
+      <div class="prog-slider-wrap" id="rob-slider-wrap" style="opacity:0.3;pointer-events:none">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:#8ba3bf;margin-bottom:3px">
+          <span>XP</span><span id="rob-val" style="color:#F5A623;font-weight:700">0 XP</span>
+        </div>
+        <input type="range" id="rob-inp" min="0" max="1400" step="10" value="0" style="--ac:#F5A623">
+        <div class="inp-bar-bg"><div class="inp-bar-fill" id="rob-bar" style="background:#F5A623;width:0%"></div></div>
+      </div>
+    </div>
+    <div class="inp-sep"></div>
+    <!-- STEM -->
+    <div class="prog-block">
+      <div class="prog-header">
+        <label class="prog-check-label">
+          <input type="checkbox" id="enrol-stem" class="prog-checkbox">
+          <span class="prog-check-box" style="--pc:#00C8B4"></span>
+          <span style="color:#00C8B4;font-weight:700;font-size:12px">⚙ STEM</span>
+        </label>
+        <select class="year-sel" id="year-stem" disabled>
+          <option value="1">L1</option><option value="2">L2</option><option value="3">L3</option>
+          <option value="4">L4</option><option value="5">L5</option><option value="6">L6</option><option value="7">L7</option>
+        </select>
+      </div>
+      <div class="prog-slider-wrap" id="stem-slider-wrap" style="opacity:0.3;pointer-events:none">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:#8ba3bf;margin-bottom:3px">
+          <span>XP</span><span id="stem-val" style="color:#00C8B4;font-weight:700">0 XP</span>
+        </div>
+        <input type="range" id="stem-inp" min="0" max="1400" step="10" value="0" style="--ac:#00C8B4">
+        <div class="inp-bar-bg"><div class="inp-bar-fill" id="stem-bar" style="background:#00C8B4;width:0%"></div></div>
+      </div>
+    </div>
+    <div class="inp-sep"></div>
+    <!-- COMPETENCY MATRIX — collapsible -->
+    <div>
+      <div class="comp-tab" id="comp-tab" onclick="toggleComp()">
+        <span class="comp-tab-label">📋 Competency Matrix</span>
+        <span class="comp-chevron" id="comp-chevron">▼</span>
+      </div>
+      <div id="comp-body">
+        <div id="comp-rows">
+          <!-- rows injected by JS -->
+        </div>
+        <div class="comp-row" style="margin-top:6px">
+          <div class="comp-label"><span>Teacher Comment</span></div>
+          <textarea class="comp-comment" id="comp-comment" rows="2" placeholder="Optional note for this session…"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- FIXED FOOTER — Apply + Revert always visible -->
+  <div style="padding-top:6px;flex-shrink:0">
+    <div class="inp-sep" style="margin-bottom:6px"></div>
+    <div id="unsaved-badge">● Unsaved changes</div>
+    <button class="apply-btn" id="apply-btn">✓ Apply &amp; Save</button>
+    <button class="revert-btn" id="revert-btn" disabled>↩ Revert to Saved</button>
+  </div>
+</div>
+<div id="wire-tip">
+  <div class="wt-label" id="wt-label"></div>
+  <div class="wt-name" id="wt-name"></div>
+  <div class="wt-val"  id="wt-val"></div>
+  <div class="wt-bg"><div class="wt-fill" id="wt-fill"></div></div>
+</div>
+<div id="node-label">
+  <div class="nl-name" id="nl-name"></div>
+  <div class="nl-row"><span class="nl-k">AI</span><span class="nl-v" id="nl-ai" style="color:#E8553E"></span></div>
+  <div class="nl-row"><span class="nl-k">Robotics</span><span class="nl-v" id="nl-rob" style="color:#F5A623"></span></div>
+  <div class="nl-row"><span class="nl-k">STEM</span><span class="nl-v" id="nl-stem" style="color:#00C8B4"></span></div>
+  <div class="nl-hint">click to open</div>
+</div>
+<div id="panel-overlay"></div>
+<div id="panel">
+  <button id="panel-close">&#215;</button>
+  <div id="p-title"></div><div id="p-sub"></div>
+  <div class="p-stat-grid" id="p-stats"></div>
+  <div id="p-bars"></div>
+  <div class="p-tags" id="p-tags"></div>
+  <button id="close-btn" style="margin-top:18px;width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:9px;font-size:12px;color:#5a7490;cursor:pointer;font-family:inherit">Close</button>
+</div>
+<div id="legend-competency">
+  <div class="leg-group leg-group--competencies">
+    <span class="leg-section-label">Competency Stars</span>
+    <div class="leg leg-effect"><div class="leg-icon">🔨</div><span>Build &amp; Make <span class="leg-lvl">warm spark</span></span></div>
+    <div class="leg leg-effect"><div class="leg-icon">⚙</div><span>Logic &amp; Code <span class="leg-lvl">precise dot</span></span></div>
+    <div class="leg leg-effect"><div class="leg-icon">🔍</div><span>Troubleshoot <span class="leg-lvl">streak</span></span></div>
+    <div class="leg leg-effect"><div class="leg-icon">💡</div><span>Explainability <span class="leg-lvl">golden orb</span></span></div>
+    <div class="leg leg-effect"><div class="leg-icon">🤝</div><span>Teamwork <span class="leg-lvl">ring pulse</span></span></div>
+  </div>
+</div>
+<div id="legend">
+  <div class="leg-col">
+    <span class="leg-section-label">Programmes</span>
+    <div class="leg-group leg-group--programmes">
+      <div class="leg"><div class="leg-swatch" style="background:#E8553E"></div><span>AI Coding</span></div>
+      <div class="leg"><div class="leg-swatch" style="background:#F5A623"></div><span>Robotics</span></div>
+      <div class="leg"><div class="leg-swatch" style="background:#00C8B4"></div><span>STEM</span></div>
+    </div>
+  </div>
+  <div class="leg-sep"></div>
+  <div class="leg-col">
+    <span class="leg-section-label">Level Effects</span>
+    <div class="leg-group leg-group--effects">
+      <div class="leg leg-effect"><div class="leg-icon">⚡</div><span>Electric pulse <span class="leg-lvl">L1+</span></span></div>
+      <div class="leg leg-effect"><div class="leg-icon">✦</div><span>Energy flare <span class="leg-lvl">L1+</span></span></div>
+      <div class="leg leg-effect"><div class="leg-icon">↯</div><span>Lightning bolt <span class="leg-lvl">L3+</span></span></div>
+      <div class="leg leg-effect"><div class="leg-icon">☀</div><span>Solar arc <span class="leg-lvl">L5+</span></span></div>
+    </div>
+    <div class="leg-sub">Glow &amp; effects scale with XP + Level</div>
+  </div>
+  <div class="leg-sep"></div>
+  <div class="leg-col">
+    <span class="leg-section-label">Achievements</span>
+    <div class="leg-group leg-group--milestones">
+      <div class="leg leg-effect"><div class="leg-icon">🏅</div><span>Milestone <span class="leg-lvl">badge burst</span></span></div>
+      <div class="leg leg-effect"><div class="leg-icon">🔥</div><span>Streak <span class="leg-lvl">wire aura</span></span></div>
+    </div>
+    <div class="leg-sub">Particle density = star rating per competency</div>
+  </div>
+</div>
+<div id="arc-name">
+  <div class="arc-main">CSA Progression ARC™</div>
+  <div class="arc-sub">Cognitive Systems Academy™ · Explainable Intelligence Framework™</div>
+</div>
+<div id="watermark">
+  <div class="wm2">Cognitive Systems Academy™ · Cognitive Intelligence Lab™</div>
+  <div class="wm3">Piaget · Bruner · Vygotsky · Papert · MIT · K–12 CS Framework</div>
+</div>
+<script>
+/* ── CANVAS ── */
+const C   = document.getElementById('canvas');
+const ctx = C.getContext('2d');
+const dpr = window.devicePixelRatio||1;
+function W(){ return C.clientWidth; }
+function H(){ return C.clientHeight; }
+function resize(){
+  C.width  = W()*dpr; C.height = H()*dpr;
+  ctx.scale(dpr,dpr);
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* ── COLOURS ── */
+const COL = { ai:'#E8553E', rob:'#F5A623', stem:'#00C8B4' };
+
+/* ── NODES — 7-year milestones ── */
+const NODES = [
+  {id:0,label:'Year 1 (L1)',sublabel:'Scratch · Wheels Bot · Paper Craft',t:.07, lc:'#8ba3bf'},
+  {id:1,label:'Year 2 (L2)',sublabel:'Scratch+ · Obstacle Bot · Circuits',  t:.21, lc:'#8ba3bf'},
+  {id:2,label:'Year 3 (L3)',sublabel:'Scratch Games · Line-Follow · Machines',t:.35,lc:'#4DD68A'},
+  {id:3,label:'Year 4 (L3)',sublabel:'Scratch Adv · RC Robot · IoT',          t:.49,lc:'#4DD68A'},
+  {id:4,label:'Year 5 (L4)',sublabel:'Scratch→Python · Coded Robot · Inventions',t:.63,lc:'#00C8B4'},
+  {id:5,label:'Year 6 (L4)',sublabel:'Python AI · AI Robot · DSA Closes',     t:.80,lc:'#F5A623'},
+  {id:6,label:'Year 7 (L5)',sublabel:'GenAI · Advanced · Portfolio Showcase', t:.96,lc:'#E8553E'},
+];
+
+/* ── PROGRAMME ENROLMENT STATE ── */
+const ENROL = {
+  ai:   { enrolled:false, year:1 },
+  rob:  { enrolled:false, year:1 },
+  stem: { enrolled:false, year:1 },
+};
+/* attendance streak — loaded from Airtable Attendance_Streak field */
+const STREAK = { ai:0, rob:0, stem:0 };
+function isEnrolled(id)    { return ENROL[id].enrolled; }
+function getStudentYear(id){ return ENROL[id].year; }
+
+/* ── WIRES — 3 programme wires ── */
+const WIRES = [
+  {id:'ai',  color:COL.ai,  dyBase:-28, baseW:36, freq:.72, phase:0.0, tFreq:2.8, ampScale:.85, label:'AI Coding',   score:0},
+  {id:'rob', color:COL.rob, dyBase:0,   baseW:32, freq:.52, phase:2.1, tFreq:2.2, ampScale:.78, label:'Robotics',    score:0},
+  {id:'stem',color:COL.stem,dyBase:28,  baseW:32, freq:.90, phase:4.3, tFreq:3.4, ampScale:.82, label:'STEM', score:0},
+];
+function getWireScore(id){ return WIRES.find(w=>w.id===id).score; }
+function setWireScore(id,v){ const w=WIRES.find(w=>w.id===id); if(w) w.score=Math.min(1400,Math.max(0,+v)); }
+
+/* ── STATE ── */
+let time=0, hovNode=null, hovWire=null, lastAllPts=[];
+let wireAvg={ai:0, rob:0, stem:0};
+let surgeWireId=null, surgeT=-1, surgeNextFire=3.0;
+const SURGE_SPEED=1.5, SURGE_MIN=2.0, SURGE_MAX=3.5;
+
+function initWireAvg(){
+  for(const w of WIRES) wireAvg[w.id]=w.score/1400;
+  let maxId=null,maxVal=-1;
+  for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+  surgeWireId=maxId;
+}
+initWireAvg();
+
+/* ── SPLINE ── */
+const P0x=0.02, P0y=.50, P1x=.25, P1y=.18, P2x=.75, P2y=.82, P3x=0.95, P3y=.50;
+function getSplinePoint(t,w,h){
+  const u=1-t,u2=u*u,t2=t*t,cubic=t2*t;
+  return{
+    x:(u2*u*P0x+3*u2*t*P1x+3*u*t2*P2x+cubic*P3x)*w,
+    y:(u2*u*P0y+3*u2*t*P1y+3*u*t2*P2y+cubic*P3y)*h
+  };
+}
+function pScaleW(t){ return 0.28+0.72*Math.pow(t,0.55); }
+function pScaleY(t){ return 0.30+0.70*Math.pow(t,0.50); }
+function pScaleA(t){ return 0.30+0.70*Math.pow(t,0.50); }
+
+function buildPts(wire,segs,w,h){
+  const pts=[];
+  for(let i=0;i<=segs;i++){
+    const t=i/segs;
+    const base=getSplinePoint(t,w,h);
+    const sy=pScaleY(t);
+    const waveAmp=h*0.032*wire.ampScale*sy*sy;
+    const wave=Math.sin(wire.tFreq*t*Math.PI-wire.freq*time+wire.phase)*waveAmp;
+    pts.push({x:base.x, y:base.y+wire.dyBase*sy+wave, t});
+  }
+  return pts;
+}
+
+/* ── COMPUTE AVGS ── */
+let drawerOpen=false;
+function computeAvgs(){
+  if(!drawerOpen){
+    for(const w of WIRES){
+      const target=w.score/1400;
+      wireAvg[w.id]+=(target-wireAvg[w.id])*0.12;
+    }
+  }
+  let maxId=null,maxVal=-1;
+  for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+  surgeWireId=maxId;
+}
+
+/* ── SURGE ── */
+let surgeDir=1;
+function tickSurge(dt){
+  if(surgeT>=0){
+    surgeT+=SURGE_SPEED*dt;
+    if(surgeT>1.0){surgeT=-1;surgeNextFire=time+SURGE_MIN+Math.random()*(SURGE_MAX-SURGE_MIN);}
+  } else if(time>surgeNextFire){
+    surgeT=0;
+  }
+}
+
+/* ── DRAW WIRE ── */
+function drawWire(pts,wire,hl){
+  const n=pts.length; if(n<2) return;
+  const col=wire.color, bw=wire.baseW;
+  const isSurge=(wire.id===surgeWireId);
+  const enrolled=isEnrolled(wire.id);
+  const avg=wireAvg[wire.id];
+
+  /* ── Pass 0: Attendance streak aura — pulsing outer shimmer ── */
+  const streak = STREAK[wire.id]||0;
+  if(enrolled && streak>=5){
+    const streakNorm = Math.min((streak-5)/25, 1.0);  /* 0 at 5, 1.0 at 30+ */
+    const pulse = 0.5+0.5*Math.sin(time*1.8+wire.phase);
+    ctx.save();
+    ctx.strokeStyle=col; ctx.shadowColor=col;
+    ctx.shadowBlur=bw*3.5*streakNorm*(0.6+pulse*0.4);
+    ctx.lineWidth=bw*pScaleW(0.5)*1.8;
+    ctx.globalAlpha=streakNorm*(0.12+pulse*0.10);
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+    ctx.stroke();
+    ctx.restore();
+  }
+  /* glow level: enrolled = full range, not enrolled = barely visible ghost */
+  const lvlBoost  = enrolled ? (getStudentYear(wire.id)-1)/6 : 0; /* 0→1 L1→L7 */
+  /* competency modifier: teacher rubric scores shade the glow ±15%
+     0 scores (no grading) = neutral 1.0 — no penalty for ungraded students
+     all 1-star = 0.92×  |  all 2-star = 1.00×  |  all 4-star = 1.15× */
+  const compRaw = (compScores.Build+compScores.Logic+compScores.Troubleshoot+compScores.Explain+compScores.Teamwork);
+  const compMod = compRaw===0 ? 1.0 : 0.85 + (compRaw/20)*0.30;  /* 0.85→1.15 */
+  const glowRaw   = enrolled ? Math.min(avg*(0.55+lvlBoost*0.45)*compMod+(isSurge?avg*0.50:0),1.0) : 0.04;
+  /* Power curve: slow ramp at low scores, steeper climb at high scores
+     glowRaw=0.0 → glowLevel=0.00  (dark)
+     glowRaw=0.3 → glowLevel=0.09  (dim)
+     glowRaw=0.5 → glowLevel=0.22  (visible)
+     glowRaw=0.7 → glowLevel=0.46  (glowing)
+     glowRaw=1.0 → glowLevel=1.00  (blazing) */
+  const glowLevel = enrolled ? Math.pow(glowRaw, 2.0) : 0.002;
+
+  /* Unenrolled: ultra-thin faint ghost — draw and return immediately */
+  if(!enrolled){
+    ctx.save();
+    ctx.lineCap='round'; ctx.strokeStyle=col; ctx.shadowBlur=0;
+    for(let i=0;i<n-1;i++){
+      const p0=pts[i],p1=pts[i+1],tm=(p0.t+p1.t)*.5;
+      ctx.globalAlpha=0.06*pScaleA(tm);
+      ctx.lineWidth=Math.max(0.5, bw*pScaleW(tm)*0.35);
+      ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();
+    }
+    ctx.restore();
+    return;
+  }
+
+  /* ── ENROLLED: full multi-pass glow ──
+     At score=0  (avg=0): near dark — core visible, minimal blur
+     At score=700 (avg=0.5): clear glow, visible halo
+     At score=1400 (avg=1): blazing — large shadowBlur, bright core, wide halo */
+  const maxBlur  = (isSurge ? 48 : 32)*(1+lvlBoost*0.45); /* L7: +45% blur, capped */
+  const blurNow  = glowLevel * maxBlur * (hl?1.4:1.0);
+  const hlBoost  = hl?1.20:1.0;
+
+  function tracePath(){
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<n-2;i++){
+      ctx.quadraticCurveTo(pts[i].x,pts[i].y,(pts[i].x+pts[i+1].x)*.5,(pts[i].y+pts[i+1].y)*.5);
+    }
+    ctx.lineTo(pts[n-1].x,pts[n-1].y);
+  }
+
+  /* Pass 1 — ultra-wide outer atmospheric glow (only at mid-high scores) */
+  if(glowLevel>0.15){
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=col;ctx.shadowColor=col;
+    ctx.shadowBlur=blurNow*3.5;
+    ctx.lineWidth=0.8;
+    ctx.globalAlpha=(glowLevel-0.20)*0.70*hlBoost;
+    ctx.beginPath();tracePath();ctx.stroke();
+    ctx.restore();
+  }
+
+  /* Pass 2 — wide mid glow */
+  if(blurNow>2){
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=blurNow*1.8;
+    ctx.lineWidth=1.0;
+    ctx.globalAlpha=(0.02+glowLevel*0.80)*hlBoost;
+    ctx.beginPath();tracePath();ctx.stroke();
+    ctx.restore();
+
+    /* Pass 3 — tight inner halo */
+    ctx.save();
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=col;ctx.shadowColor=col;ctx.shadowBlur=blurNow*0.5;
+    ctx.lineWidth=1.6;
+    ctx.globalAlpha=(0.04+glowLevel*0.90)*hlBoost;
+    ctx.beginPath();tracePath();ctx.stroke();
+    ctx.restore();
+  }
+
+  /* Pass 4 — tapered core */
+  ctx.save();
+  ctx.lineCap='round';ctx.strokeStyle=col;ctx.shadowBlur=0;
+  const coreBase = 0.06 + glowLevel*0.94;
+  for(let i=0;i<n-1;i++){
+    const p0=pts[i],p1=pts[i+1],tm=(p0.t+p1.t)*.5;
+    ctx.globalAlpha=Math.min(coreBase*pScaleA(tm)*hlBoost,1.0);
+    ctx.lineWidth=bw*pScaleW(tm);
+    ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();
+  }
+  ctx.restore();
+  /* Pass 5 — ripped energy texture drawn ON TOP of core */
+  if(glowLevel>0.25){
+    ctx.save();
+    ctx.lineCap='round';
+    /* Step A: irregular bright flicker — full-width segments with noisy alpha */
+    ctx.strokeStyle=col;
+    ctx.shadowColor=col; ctx.shadowBlur=bw*glowLevel*2.0;
+    const texAmt=0.25+glowLevel*0.75;
+    const step=Math.max(1,Math.floor(5-glowLevel*3));
+    for(let i=0;i<n-1;i+=step){
+      const p0=pts[i],p1=pts[i+1],tm=(p0.t+p1.t)*.5;
+      const noise=Math.abs(Math.sin(i*3.1+time*4.5+wire.phase*2));
+      /* only draw on "bright" noise segments — creates the ripped gap look */
+      if(noise<0.40) continue;
+      const a=texAmt*noise*pScaleA(tm)*hlBoost;
+      ctx.globalAlpha=Math.min(a,0.95);
+      /* draw at full wire width — visible OVER the core */
+      ctx.lineWidth=bw*pScaleW(tm)*(0.55+noise*0.45);
+      ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();
+    }
+    /* Step B: bright white highlight thread along ridge */
+    if(glowLevel>0.50){
+      ctx.strokeStyle='rgba(255,255,255,0.90)';
+      ctx.shadowColor='#ffffff'; ctx.shadowBlur=bw*glowLevel*1.2;
+      const step2=Math.max(2,Math.floor(8-glowLevel*5));
+      for(let i=0;i<n-1;i+=step2){
+        const p0=pts[i],p1=pts[i+1],tm=(p0.t+p1.t)*.5;
+        const noise2=Math.abs(Math.sin(i*4.7+time*6.3+wire.phase));
+        if(noise2<0.55) continue;
+        const a2=(glowLevel-0.50)*1.6*noise2*pScaleA(tm)*hlBoost;
+        ctx.globalAlpha=Math.min(a2,0.70);
+        ctx.lineWidth=Math.max(0.5, bw*pScaleW(tm)*0.22);
+        ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  /* Pulse dot — enrolled only */
+  if(enrolled){
+    const pt2=((time*wire.freq*0.55)%1);
+    const pi=Math.round(pt2*(n-1));
+    if(pi>=0&&pi<n){
+      const pp=pts[pi],sw=pScaleW(pp.t);
+      const dotR=Math.max(0.7,bw*sw*0.45);  /* pin-sized pulse dot */
+      ctx.save();
+      /* tight glow halo */
+      ctx.globalAlpha=Math.min(0.22*pScaleA(pp.t)*glowLevel,0.38);
+      ctx.fillStyle=col;
+      ctx.shadowColor=col; ctx.shadowBlur=dotR*5;
+      ctx.beginPath();ctx.arc(pp.x,pp.y,dotR*1.3,0,Math.PI*2);ctx.fill();
+      /* core dot */
+      ctx.shadowBlur=dotR*3;
+      ctx.globalAlpha=Math.min(0.80*pScaleA(pp.t),0.92);
+      ctx.beginPath();ctx.arc(pp.x,pp.y,dotR,0,Math.PI*2);ctx.fill();
+      /* white centre pinpoint */
+      ctx.shadowBlur=0; ctx.globalAlpha=0.70;
+      ctx.fillStyle='rgba(255,255,255,.85)';
+      ctx.beginPath();ctx.arc(pp.x,pp.y,dotR*0.30,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+/* ── DRAW WIRE NODE — one per enrolled wire at studentYear ── */
+function drawWireNode(pt,node,wire,hov){
+  const x=pt.x,y=pt.y,sw=pScaleW(pt.t),col=wire.color;
+  const r=Math.max(1.0,1.6*sw);
+  const ring=r+Math.max(0.5,0.7*sw);
+  const frac=Math.min(getWireScore(wire.id)/1400,1);
+  const yr=getStudentYear(wire.id);
+  if(hov){
+    ctx.save();ctx.globalAlpha=0.12;ctx.fillStyle=col;
+    ctx.shadowColor=col;ctx.shadowBlur=18;
+    ctx.beginPath();ctx.arc(x,y,ring*1.08,0,Math.PI*2);ctx.fill();ctx.restore();
+  }
+  ctx.save();
+  ctx.fillStyle='#05090f';ctx.globalAlpha=0.92;
+  ctx.beginPath();ctx.arc(x,y,ring,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=col;ctx.lineWidth=Math.max(0.6,0.9*sw);
+  ctx.globalAlpha=hov?1.0:0.85;
+  ctx.shadowColor=col;ctx.shadowBlur=hov?5:2;
+  ctx.beginPath();ctx.arc(x,y,ring,0,Math.PI*2);ctx.stroke();
+  ctx.shadowBlur=0;
+  ctx.strokeStyle=col;ctx.lineWidth=Math.max(1.0,1.4*sw);
+  ctx.globalAlpha=hov?0.95:0.75;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(x,y,ring,-Math.PI*.5,-Math.PI*.5+frac*Math.PI*2);ctx.stroke();
+  ctx.globalAlpha=0.80;ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=3;
+  ctx.beginPath();ctx.arc(x,y,Math.max(0.8,r*.30),0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;ctx.globalAlpha=0.75;ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(x,y,Math.max(0.4,r*.12),0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  /* label pill */
+  const lbl=wire.label+' · L'+yr;
+  const fs=Math.max(9,Math.round(11*Math.max(0.55,sw)));
+  ctx.save();
+  ctx.font='600 '+fs+'px -apple-system,sans-serif';
+  const tw=ctx.measureText(lbl).width;
+  const ph=fs+8,pw=tw+18,px2=x-pw/2;
+  const above=wire.dyBase<=0;
+  const py2=above?y-ring-ph-6:y+ring+6;
+  ctx.globalAlpha=0.88;ctx.fillStyle='#05090f';
+  ctx.beginPath();ctx.roundRect(px2,py2,pw,ph,ph/2);ctx.fill();
+  ctx.globalAlpha=0.65;ctx.strokeStyle=col;ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(px2,py2,pw,ph,ph/2);ctx.stroke();
+  ctx.globalAlpha=1.0;ctx.fillStyle=col;ctx.textAlign='center';
+  ctx.fillText(lbl,x,py2+fs+3);
+  const sl=getWireScore(wire.id)+' / 1400 XP';
+  const sfs=Math.max(8,Math.round(9*Math.max(0.55,sw)));
+  ctx.font='500 '+sfs+'px -apple-system,sans-serif';
+  const spy2=above?py2-sfs-4:py2+ph+sfs+2;
+  ctx.globalAlpha=0.55;ctx.fillStyle=col;
+  ctx.fillText(sl,x,spy2);
+  ctx.restore();
+}
+
+/* ── HIT TESTS ── */
+function hitNode(mx,my){
+  for(let wi=0;wi<WIRES.length;wi++){
+    const wire=WIRES[wi];
+    if(!isEnrolled(wire.id)) continue;
+    const yr=getStudentYear(wire.id);
+    const node=NODES[yr-1]||NODES[NODES.length-1];
+    const pts=lastAllPts[wi];
+    if(!pts||!pts.length) continue;
+    const ti=Math.round(node.t*(pts.length-1));
+    const pt=pts[Math.min(ti,pts.length-1)];
+    const ring=Math.max(2.0,3.2*pScaleW(pt.t))+Math.max(0.8,1.2*pScaleW(pt.t));
+    if((mx-pt.x)**2+(my-pt.y)**2<(ring*3.5)**2) return node;
+  }
+  return null;
+}
+function hitWire(mx,my,allPts){
+  for(let wi=0;wi<WIRES.length;wi++){
+    const pts=allPts[wi];
+    for(let i=0;i<pts.length-1;i++){
+      const p0=pts[i],p1=pts[i+1];
+      const dx=p1.x-p0.x,dy=p1.y-p0.y,len2=dx*dx+dy*dy;
+      if(!len2) continue;
+      const nt=Math.max(0,Math.min(1,((mx-p0.x)*dx+(my-p0.y)*dy)/len2));
+      const cx=p0.x+nt*dx,cy=p0.y+nt*dy,tm=p0.t+nt*(p1.t-p0.t);
+      const thresh=Math.max(12,WIRES[wi].baseW*pScaleW(tm)*.8+12);
+      if(Math.hypot(mx-cx,my-cy)<thresh) return{wire:WIRES[wi],t:tm};
+    }
+  }
+  return null;
+}
+
+/* ── BACKGROUND ── */
+/* ══════════════════════════════════════════════
+   GALAXY PARTICLE SYSTEM — stars + nebula wisps
+   ══════════════════════════════════════════════ */
+const GALAXY=(function(){
+  function rng(a,b){return a+(b-a)*Math.random();}
+  /* ── stars ── */
+  const STARS=[];
+  for(let i=0;i<200;i++){
+    STARS.push({
+      x:Math.random(), y:Math.random(),
+      z:rng(0.15,1.0),
+      vx:rng(-0.012,0.012)*(Math.random()<.5?1:-1),
+      vy:rng(-0.005,0.005),
+      r:rng(0.4,2.2),           /* wider range — sparse bright ones */
+      baseA:rng(0.06,0.55),
+      tw:rng(0,Math.PI*2),      /* twinkle phase */
+      ts:rng(0.8,5.5),          /* mix of quick flashes and slow drifters */
+      col:Math.random()<.07?'#F5C060'
+         :Math.random()<.09?'#60D4C8'
+         :Math.random()<.08?'#E8896E'
+         :(Math.random()<.45?'#d0e4ff':'#ffffff'),
+    });
+  }
+  /* ── nebula wisps ── */
+  const WISPS=[];
+  const WCOLS=['#E8553E','#F5A623','#00C8B4','#4a2080','#082840','#203050'];
+  for(let i=0;i<6;i++){
+    WISPS.push({
+      x:Math.random(), y:Math.random(),
+      vx:rng(-0.004,0.004), vy:rng(-0.002,0.002),
+      r:rng(80,180),
+      a:rng(0.012,0.030),
+      col:WCOLS[Math.floor(Math.random()*WCOLS.length)],
+    });
+  }
+  return {
+    tick(dt){
+      for(const s of STARS){
+        s.x+=s.vx*dt*s.z; s.y+=s.vy*dt*s.z;
+        if(s.x<-.02) s.x=1.02; if(s.x>1.02) s.x=-.02;
+        if(s.y<-.02) s.y=1.02; if(s.y>1.02) s.y=-.02;
+      }
+      for(const w of WISPS){
+        w.x+=w.vx*dt; w.y+=w.vy*dt;
+        if(w.x<-.25) w.x=1.25; if(w.x>1.25) w.x=-.25;
+        if(w.y<-.25) w.y=1.25; if(w.y>1.25) w.y=-.25;
+      }
+    },
+    draw(w,h){
+      /* nebula wisps */
+      for(const wb of WISPS){
+        ctx.save();
+        ctx.globalAlpha=wb.a;
+        ctx.fillStyle=wb.col;
+        ctx.shadowBlur=0;
+        ctx.beginPath();ctx.arc(wb.x*w,wb.y*h,wb.r*0.4,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+      /* stars */
+      for(const s of STARS){
+        const twk=0.5+0.5*Math.sin(time*s.ts+s.tw);
+        const a=s.baseA*(0.50+0.50*twk)*s.z;
+        const r=s.r*s.z*(0.75+0.25*twk);
+        const sx=s.x*w, sy=s.y*h;
+        ctx.save();
+        ctx.globalAlpha=Math.min(a,1);
+        ctx.fillStyle=s.col;
+        ctx.shadowColor=s.col;
+        ctx.shadowBlur=r*2;
+        /* cross spike on bright stars */
+        if(twk>0.92&&r>1.0){
+          ctx.globalAlpha=Math.min(a*0.6,0.8);
+          ctx.fillRect(sx-r*.25,sy-r*3,r*.5,r*6);
+          ctx.fillRect(sx-r*3,sy-r*.25,r*6,r*.5);
+          ctx.globalAlpha=Math.min(a,1);
+        }
+        ctx.beginPath();ctx.arc(sx,sy,Math.max(0.5,r),0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    }
+  };
+})();
+
+/* ══════════════════════════════════════════════
+   ELECTRIC SPARK SYSTEM — jagged arcs on wires
+   ══════════════════════════════════════════════ */
+const SPARKS=(function(){
+  const pools={ai:[],rob:[],stem:[]};
+  const MAX=5;
+  function sr(a,b){return a+(b-a)*Math.random();}
+  /* build a zigzag spark from pts[startIdx] along dir for ~count steps */
+  function buildZig(pts,startIdx,dir,count){
+    return buildZigScaled(pts,startIdx,dir,count,22);
+  }
+  function buildZigScaled(pts,startIdx,dir,count,jagAmp){
+    const n=pts.length,segs=[];
+    let ci=startIdx;
+    for(let k=0;k<count;k++){
+      const ni=Math.min(Math.max(ci+dir,0),n-1);
+      const p0=pts[ci],p1=pts[ni];
+      const dx=p1.x-p0.x,dy=p1.y-p0.y,len=Math.hypot(dx,dy)||1;
+      const px=-dy/len,py=dx/len;
+      const jag=sr(-jagAmp,jagAmp);
+      const mx=p0.x+(p1.x-p0.x)*.5+px*jag*.5;
+      const my=p0.y+(p1.y-p0.y)*.5+py*jag*.5;
+      segs.push({x0:p0.x,y0:p0.y,x1:mx,y1:my,x2:p1.x,y2:p1.y,t:p0.t});
+      ci=ni; if(ci<=0||ci>=n-1) break;
+    }
+    return segs;
+  }
+  const nxt={ai:0,rob:0,stem:0};
+  return {
+    tick(dt,allPts){
+      WIRES.forEach((wire,wi)=>{
+        const pool=pools[wire.id];
+        /* decay */
+        for(let i=pool.length-1;i>=0;i--){
+          pool[i].life-=pool[i].decay*dt;
+          if(pool[i].life<=0) pool.splice(i,1);
+        }
+        if(!isEnrolled(wire.id)) return;
+        if(time<nxt[wire.id]) return;
+        const pts=allPts[wi];
+        if(!pts||pts.length<8) return;
+        if(pool.length<MAX){
+          const sAvg=wireAvg[wire.id];
+          const sLvl=(getStudentYear(wire.id)-1)/6;        /* 0 at L1 → 1 at L7 */
+          const sPow=sAvg*(0.45+sLvl*0.55);               /* needs BOTH score AND level */
+          /* Level-first interval table — XP modulates ±30%
+             L1:4.5s  L2:3.5s  L3:2.8s  L4:2.2s  L5:1.5s  L6:0.6s  L7:0.09s */
+          const sLvlIdx=getStudentYear(wire.id)-1;  /* 0–6 */
+          const sBaseTbl=[1.20,0.75,0.48,0.28,0.16,0.10,0.04];
+          const sBaseInterval=sBaseTbl[sLvlIdx]||4.5;
+          const sXpMod=0.60+sAvg*0.80;  /* XP 0→max: interval shrinks by up to 57% */
+          const sparkInterval=sBaseInterval/sXpMod;
+          nxt[wire.id]=time+sr(sparkInterval*0.65,sparkInterval*1.35);
+          const idx=2+Math.floor(Math.random()*(pts.length-4));
+          const dir=Math.random()<.5?1:-1;
+          const segCount=Math.floor(sr(2,4)+sLvlIdx*1.8+sAvg*5);  /* L1:2-4 → L7:15-20 */
+          const bwNow=wire.baseW*pScaleW(pts[idx]?.t||0.5);
+          const jagScale=bwNow*(0.12+sLvlIdx*0.10+sAvg*0.18);        /* jag = fraction of wire width */
+          const glowPow=sr(6,12)*(0.28+sLvlIdx*0.22+sAvg*1.0);       /* L1:dim → L7:blazing */
+          const decayPow=sr(3.5,6.5)*(1.3-sLvlIdx*0.12-sAvg*0.4);   /* faster decay keeps pool lean */
+          pool.push({
+            segs:buildZigScaled(pts,idx,dir,segCount,jagScale),
+            life:1.0,
+            decay:decayPow,
+            col:wire.color,
+            glow:glowPow,
+            thick: Math.min(bwNow*0.18, 0.5+sLvlIdx*0.22+sAvg*0.9),  /* capped at wire width */
+          });
+        }
+      });
+    },
+    clear(id){ pools[id]=[]; },
+    draw(){
+      for(const wid of['ai','rob','stem']){
+        for(const sp of pools[wid]){
+          ctx.save();
+          ctx.strokeStyle=sp.col;
+          ctx.shadowColor=sp.col;
+          ctx.shadowBlur=sp.glow*sp.life*2.2;
+          ctx.lineWidth=Math.max(0.8,(sp.thick||1.5)*sp.life*2.2);
+          ctx.lineCap='round';ctx.lineJoin='round';
+          ctx.globalAlpha=Math.min(sp.life*1.0,1.0)*(0.65+sp.glow*0.015);
+          ctx.beginPath();
+          for(const seg of sp.segs){
+            ctx.moveTo(seg.x0,seg.y0);
+            ctx.lineTo(seg.x1,seg.y1);
+            ctx.lineTo(seg.x2,seg.y2);
+          }
+          ctx.stroke();
+          /* white-hot core on fresh sparks */
+          if(sp.life>0.3){
+            ctx.strokeStyle='rgba(255,255,255,0.9)';
+            ctx.shadowColor='#ffffff';
+            ctx.shadowBlur=sp.glow*0.5;
+            ctx.lineWidth=Math.max(0.4,0.8*sp.life);
+            ctx.globalAlpha=sp.life*0.7;
+            ctx.beginPath();
+            for(const seg of sp.segs){
+              ctx.moveTo(seg.x0,seg.y0);
+              ctx.lineTo(seg.x1,seg.y1);
+              ctx.lineTo(seg.x2,seg.y2);
+            }
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+      }
+    }
+  };
+})();
+
+/* ══════════════════════════════════════════════
+   WIRE FLARE PULSES
+   Radial flash burst at random wire positions —
+   like energy nodes flaring along the wire.
+   ══════════════════════════════════════════════ */
+const FLARES=(function(){
+  const pool=[];
+  const MAX=7;
+  function fr(a,b){return a+(b-a)*Math.random();}
+  const nxt={ai:0,rob:0,stem:0};
+  return{
+    tick(dt,allPts){
+      /* age existing flares */
+      for(let i=pool.length-1;i>=0;i--){
+        pool[i].life-=pool[i].decay*dt;
+        if(pool[i].life<=0) pool.splice(i,1);
+      }
+      WIRES.forEach((wire,wi)=>{
+        if(!isEnrolled(wire.id)) return;
+        if(time<nxt[wire.id]) return;
+        const pts=allPts[wi];
+        if(!pts||pts.length<4) return;
+        if(pool.length<MAX){
+          const fAvg=wireAvg[wire.id];
+          const fLvl=(getStudentYear(wire.id)-1)/6;
+          const fPow=fAvg*(0.45+fLvl*0.55);
+          const fLvlIdx=getStudentYear(wire.id)-1;
+          const fBaseTbl=[3.0,1.8,1.1,0.65,0.35,0.14,0.05];
+          const fBaseInterval=fBaseTbl[fLvlIdx]||3.0;
+          const fXpMod=0.60+fAvg*0.80;
+          const flareInterval=fBaseInterval/fXpMod;
+          nxt[wire.id]=time+fr(flareInterval*0.65,flareInterval*1.35);
+          /* L5+: sometimes spawn 2 simultaneous flares; L7: up to 3 */
+          const spawnCount=fLvlIdx>=6?(Math.random()<0.35?2:1):fLvlIdx>=5?(Math.random()<0.25?2:1):1;
+          for(let sc=0;sc<spawnCount&&pool.length<MAX;sc++){
+            const baseIdx=2+Math.floor(Math.random()*(pts.length-4));
+            const idxFinal=Math.min(baseIdx+sc*Math.floor(pts.length*0.12),pts.length-2);
+            const pt=pts[idxFinal];
+            const sw=pScaleW(pt.t);
+            const spokeCount=Math.floor(fr(4,6)+fLvlIdx*1.6+fAvg*3);
+            const rMaxVal=fr(8,16)*sw*(0.45+fLvlIdx*0.22+fAvg*0.65);
+            const decayFlare=fr(2.0,4.0)*(1.5-fLvlIdx*0.14-fAvg*0.5);
+            const hasShock=fLvlIdx>=4&&Math.random()<(fLvlIdx>=5?0.40+fAvg*0.50:0.15+fAvg*0.25);
+            const isLightning=fLvlIdx>=2&&Math.random()<([0,0,0.10,0.22,0.38,0.50,0.55][fLvlIdx]||0)+fAvg*0.18;
+            pool.push({
+              wid:wire.id,
+              x:pt.x,y:pt.y,t:pt.t,
+              r0:fr(1.5,4)*sw*(0.3+fPow*0.7),
+              rMax:rMaxVal,
+              shockR:rMaxVal*fr(1.8,3.2),
+              life:1.0,decay:decayFlare,
+              col:wire.color,
+              spokes:spokeCount,
+              rot:Math.random()*Math.PI*2,
+              pow:fPow,lvlIdx:fLvlIdx,hasShock,isLightning,
+            });
+          }
+        }
+      });
+    },
+    clear(id){ for(let i=pool.length-1;i>=0;i--){ if(pool[i].wid===id) pool.splice(i,1); } },
+    draw(){
+      for(const f of pool){
+        const progress=1-f.life;
+        const r=f.r0+(f.rMax-f.r0)*progress;
+        const a=f.life*(1-progress*0.5);
+        if(a<0.02) continue;
+        const fPowD=f.pow||0.2;
+        ctx.save();
+        ctx.strokeStyle=f.col; ctx.fillStyle=f.col;
+        ctx.shadowColor=f.col;
+
+        /* L6+ shockwave — outer ring expanding faster than main flare */
+        if(f.hasShock){
+          const sr2=f.r0+(f.shockR-f.r0)*progress;
+          const sa=f.life*(1-progress*0.85)*0.55;
+          if(sa>0.01){
+            ctx.globalAlpha=sa;
+            ctx.shadowBlur=sr2*1.5;
+            ctx.lineWidth=Math.max(0.3,0.8*f.life);
+            ctx.beginPath();ctx.arc(f.x,f.y,sr2,0,Math.PI*2);ctx.stroke();
+          }
+        }
+
+        /* ── LIGHTNING BOLT  L3→L7 incremental ──
+           L3(idx2): 1 arm, faint, short, thin
+           L4(idx3): 1-2 arms, moderate length
+           L5(idx4): 2-3 arms, bright, sub-branch
+           L6(idx5): 3-5 arms, forked, blazing
+           L7(idx6): 4-6 arms, full storm, thick, long */
+        if(f.isLightning&&progress<0.55){
+          ctx.save();
+          const li=f.lvlIdx||0;
+          /* per-level alpha: L3 very faint → L7 near-full */
+          const lAlphaBase=[0,0,0.72,0.82,0.90,0.95,1.00][li]||0.72;
+          const lAlpha=f.life*(1-progress*1.4)*lAlphaBase;
+          if(lAlpha>0.02){
+            /* per-level arm count, bolt width, length, jag intensity */
+            const armCount= [0,0,1,2,3,3,3][li]||1;
+            const armMax  = [0,0,1,2,2,3,3][li]||1;
+            const arms    = Math.floor(armCount + Math.random()*(armMax-armCount+1));
+            const boltW   = [0,0,1.4,1.8,2.2,2.4,2.0][li]||1.4;
+            const jagAmt  = [0,0,0.18,0.24,0.30,0.38,0.48][li]||0.18;
+            const boltLen = f.rMax*(  [0,0,1.80,2.20,2.60,2.80,2.20][li]||1.80 );
+            const boltSteps=[0,0,4,5,6,7,6][li]||4;
+            ctx.lineCap='round'; ctx.lineJoin='round';
+
+            for(let a2=0;a2<arms;a2++){
+              const ang=f.rot+a2*(Math.PI*2/arms)+(Math.random()-0.5)*0.5;
+              /* build jagged bolt path */
+              function drawBolt(ox,oy,ang2,len2,steps2,jag2,alpha2,wid2,doSub){
+                const pts=[[ox,oy]];
+                let cx2=ox,cy2=oy;
+                for(let s=0;s<steps2;s++){
+                  const t2=(s+1)/steps2;
+                  const nx=ox+Math.cos(ang2)*len2*t2;
+                  const ny=oy+Math.sin(ang2)*len2*t2;
+                  const dx=nx-cx2,dy=ny-cy2;
+                  const pLen=Math.hypot(dx,dy)||1;
+                  const px=-dy/pLen,py=dx/pLen;
+                  const j=(Math.random()-0.5)*len2*jag2;
+                  cx2=nx+px*j; cy2=ny+py*j;
+                  pts.push([cx2,cy2]);
+                }
+                /* coloured underglow */
+                ctx.strokeStyle=f.col; ctx.shadowColor=f.col;
+                ctx.shadowBlur=wid2*20*f.life; ctx.lineWidth=wid2*3.5;
+                ctx.globalAlpha=alpha2*0.60;
+                ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+                pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1])); ctx.stroke();
+                /* white core */
+                ctx.strokeStyle='#ffffff'; ctx.shadowColor='#ffffff';
+                ctx.shadowBlur=wid2*8*f.life; ctx.lineWidth=wid2*1.5;
+                ctx.globalAlpha=Math.min(alpha2*1.2,1.0);
+                ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+                pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1])); ctx.stroke();
+                /* sub-branch (L5+) */
+                if(doSub&&li>=4&&pts.length>2){
+                  const bi=Math.floor(pts.length*0.4);
+                  const bAng=ang2+(Math.random()-0.5)*1.2;
+                  drawBolt(pts[bi][0],pts[bi][1],bAng,len2*0.35,
+                           Math.ceil(steps2*0.4),jag2*1.0,alpha2*0.35,wid2*0.45,false);
+                }
+              }
+              drawBolt(f.x,f.y,ang,boltLen,boltSteps,jagAmt,lAlpha,boltW,true);
+            }
+          }
+          ctx.restore();
+        }
+
+        /* main flare ring + spokes */
+        ctx.globalAlpha=Math.min(a*0.92+0.06,0.85);
+        ctx.shadowBlur=r*5.0*(1-progress*0.5);
+        ctx.lineWidth=Math.max(1.2,(1.8+fPowD*2.0)*f.life);
+        ctx.beginPath();ctx.arc(f.x,f.y,r,0,Math.PI*2);ctx.stroke();
+        ctx.lineWidth=Math.max(0.8,(1.0+fPowD*1.5)*f.life);
+        for(let s=0;s<f.spokes;s++){
+          const angle=f.rot+s*(Math.PI*2/f.spokes);
+          const x1=f.x+Math.cos(angle)*r*0.25;
+          const y1=f.y+Math.sin(angle)*r*0.25;
+          const x2=f.x+Math.cos(angle)*r*1.15;
+          const y2=f.y+Math.sin(angle)*r*1.15;
+          ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        }
+        /* bright centre dot */
+        ctx.globalAlpha=Math.min(f.life*0.95,0.95);
+        ctx.shadowBlur=r*2;
+        ctx.beginPath();ctx.arc(f.x,f.y,f.r0*(1-progress*0.8),0,Math.PI*2);ctx.fill();
+        /* white hot centre at birth */
+        if(f.life>0.7){
+          ctx.fillStyle='rgba(255,255,255,0.9)';
+          ctx.globalAlpha=f.life*0.80;
+          ctx.shadowBlur=4; ctx.shadowColor='#fff';
+          ctx.beginPath();ctx.arc(f.x,f.y,f.r0*0.35*(1-progress),0,Math.PI*2);ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+  };
+})();
+
+/* ══════════════════════════════════════════════
+   SOLAR FLARE ARC SYSTEM  L5+
+   Coronal-loop style curved arcs that sweep off
+   the wire surface and fade like plasma filaments.
+   ══════════════════════════════════════════════ */
+const SOLAR=(function(){
+  const pool=[];
+  const MAX=5;
+  function ar(a,b){return a+(b-a)*Math.random();}
+  const nxt={ai:0,rob:0,stem:0};
+  /* Draw a bezier arc from (x0,y0) curving outward to (x1,y1)
+     with a control point pushed perpendicular */
+  function drawArc(x0,y0,x1,y1,bulge,col,alpha,lineW,blur){
+    const mx=(x0+x1)*.5, my=(y0+y1)*.5;
+    const dx=x1-x0, dy=y1-y0;
+    const len=Math.hypot(dx,dy)||1;
+    /* perpendicular direction — bulge pushes control point outward */
+    const cx=mx + (-dy/len)*bulge;
+    const cy=my + ( dx/len)*bulge;
+    ctx.save();
+    ctx.strokeStyle=col; ctx.shadowColor=col;
+    ctx.shadowBlur=blur; ctx.lineWidth=lineW;
+    ctx.lineCap='round'; ctx.globalAlpha=alpha;
+    ctx.beginPath(); ctx.moveTo(x0,y0);
+    ctx.quadraticCurveTo(cx,cy,x1,y1); ctx.stroke();
+    /* bright inner core */
+    ctx.strokeStyle='rgba(255,255,255,0.8)';
+    ctx.shadowColor='#ffffff'; ctx.shadowBlur=blur*0.4;
+    ctx.lineWidth=lineW*0.3; ctx.globalAlpha=alpha*0.6;
+    ctx.beginPath(); ctx.moveTo(x0,y0);
+    ctx.quadraticCurveTo(cx,cy,x1,y1); ctx.stroke();
+    ctx.restore();
+  }
+  return{
+    tick(dt,allPts){
+      /* age */
+      for(let i=pool.length-1;i>=0;i--){
+        pool[i].life-=pool[i].decay*dt;
+        if(pool[i].life<=0) pool.splice(i,1);
+      }
+      WIRES.forEach((wire,wi)=>{
+        if(!isEnrolled(wire.id)) return;  /* skip unenrolled — clear handles mid-life arcs */
+        const lvlIdx=getStudentYear(wire.id)-1;
+        if(lvlIdx<4) return;  /* L5+ only */
+        if(time<nxt[wire.id]) return;
+        const pts=allPts[wi];
+        if(!pts||pts.length<8) return;
+        if(pool.length>=MAX) return;
+        const avg=wireAvg[wire.id];
+        /* interval: L5 rare → L7 frequent */
+        const arcInterval=[0,0,0,0,0,1.1,0.6,0.28][lvlIdx+1]||1.1;
+        const xpMod=0.55+avg*0.90;
+        nxt[wire.id]=time+ar(arcInterval/xpMod*0.7, arcInterval/xpMod*1.3);
+        /* pick two points on wire close to each other — arc spans between them */
+        const idx0=4+Math.floor(Math.random()*(pts.length-8));
+        const spanSegs=Math.floor(ar(8,20)+lvlIdx*3+avg*10);
+        const idx1=Math.min(idx0+spanSegs,pts.length-2);
+        const p0=pts[idx0], p1=pts[idx1];
+        const sw=pScaleW(p0.t);
+        /* bulge direction: away from wire's natural Y-centre (push outward) */
+        const wireMidY=(p0.y+p1.y)*0.5;
+        const canvasMidY=H()*0.5;
+        /* push away from centre: above-centre wires arc upward, below arc downward */
+        const naturalDir= wireMidY < canvasMidY ? -1 : 1;
+        /* occasionally flip for visual variety */
+        const bulgeDir= Math.random()<0.15 ? -naturalDir : naturalDir;
+        /* arc height: large pixels — extends well beyond wire surface */
+        const arcHeight=ar(60,110)*(0.55+(lvlIdx-4)*0.28+avg*0.60);
+        const decay=ar(0.5,1.2)*(1.6-(lvlIdx-4)*0.16-avg*0.35);
+        pool.push({
+          wid:wire.id,
+          x0:p0.x,y0:p0.y,x1:p1.x,y1:p1.y,
+          bulge:arcHeight*bulgeDir,
+          life:1.0, decay,
+          col:wire.color,
+          lvlIdx, avg,
+          lineW:ar(1.4,2.8)*(0.5+(lvlIdx-4)*0.25+avg*0.55),
+          blur: ar(16,30)*(0.55+(lvlIdx-4)*0.22+avg*0.58),
+          hasInner: lvlIdx===5&&Math.random()<0.45,
+        });
+      });
+    },
+    clear(id){ for(let i=pool.length-1;i>=0;i--){ if(pool[i].wid===id) pool.splice(i,1); } },
+    draw(){
+      for(const arc of pool){
+        const a=arc.life*(0.4+arc.avg*0.5);
+        if(a<0.02) continue;
+        drawArc(arc.x0,arc.y0,arc.x1,arc.y1,
+                arc.bulge*arc.life,  /* shrinks as it fades */
+                arc.col, a*0.85, arc.lineW*arc.life, arc.blur*arc.life);
+        /* inner nested arc (L6+) */
+        if(arc.hasInner){
+          const mx=(arc.x0+arc.x1)*.5+(arc.x1-arc.x0)*.05;
+          const my=(arc.y0+arc.y1)*.5+(arc.y1-arc.y0)*.05;
+          drawArc(arc.x0,arc.y0,mx,my,
+                  arc.bulge*0.55*arc.life,
+                  arc.col, a*0.5, arc.lineW*0.5*arc.life, arc.blur*0.5);
+        }
+      }
+    }
+  };
+})();
+
+function drawBg(){
+  const w=W(),h=H();
+  ctx.fillStyle='#030610';ctx.fillRect(0,0,w,h);
+  /* grid */
+  ctx.strokeStyle='rgba(0,200,180,0.007)';ctx.lineWidth=1;
+  const s=54;
+  for(let x2=0;x2<w;x2+=s){ctx.beginPath();ctx.moveTo(x2,0);ctx.lineTo(x2,h);ctx.stroke();}
+  for(let y2=0;y2<h;y2+=s){ctx.beginPath();ctx.moveTo(0,y2);ctx.lineTo(w,y2);ctx.stroke();}
+  GALAXY.draw(w,h);
+}
+
+/* ══════════════════════════════════════════════
+   COMPETENCY SPARKLE STARS  v2
+   5 distinct particle types — one per dimension.
+   Each type's spawn rate = its individual star score (1–4).
+   Score 0 = silent. Score 4 = dense stream.
+   ══════════════════════════════════════════════ */
+const COMP_STARS=(function(){
+  function cr(a,b){return a+(b-a)*Math.random();}
+
+  /* ── Dimension config — each has distinct look ── */
+  const DIMS={
+    Build:{
+      /* Chunky bright sparks — slow heavy drift */
+      spawn(pt,wire,score){
+        const s=score/4, sw=pScaleW(pt.t);
+        const next=nearNext(pt,wire);
+        const[nx,ny]=perp(pt,next);
+        const side=Math.random()<.5?1:-1;
+        return{
+          type:'build',
+          x:pt.x+nx*side*cr(4,10), y:pt.y+ny*side*cr(4,10),
+          vx:nx*side*cr(8,20)+cr(-4,4), vy:-cr(10,24),
+          r:cr(2.8,5.5)*(0.5+s*0.7),
+          life:1.0, decay:cr(0.35,0.70),
+          phase:Math.random()*Math.PI*2, twkSpd:cr(3,7),
+          col:wire.color, tint:'#ffe0c0', score:s, t:pt.t,
+        };
+      },
+      draw(p,twk,a){
+        const r=p.r*(0.7+twk*0.3);
+        /* chunky square-ish spark */
+        ctx.save();
+        ctx.globalAlpha=Math.min(a*0.85,0.90);
+        ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=r*6;
+        ctx.beginPath();ctx.arc(p.x,p.y,r*1.5,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle=p.tint; ctx.shadowColor=p.tint; ctx.shadowBlur=r*3;
+        ctx.globalAlpha=Math.min(a,0.95);
+        ctx.beginPath();ctx.arc(p.x,p.y,r*0.55,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    },
+
+    Logic:{
+      /* Precise small dots in tight formation */
+      spawn(pt,wire,score){
+        const s=score/4;
+        const next=nearNext(pt,wire);
+        const[nx,ny]=perp(pt,next);
+        const side=Math.random()<.5?1:-1;
+        return{
+          type:'logic',
+          x:pt.x+nx*side*cr(2,7), y:pt.y+ny*side*cr(2,7),
+          vx:nx*side*cr(5,15)+cr(-3,3), vy:-cr(6,18),
+          r:cr(1.4,2.8)*(0.4+s*0.6),
+          life:1.0, decay:cr(0.45,0.85),
+          phase:Math.random()*Math.PI*2, twkSpd:cr(8,16),
+          col:wire.color, tint:'#c0d8ff', score:s, t:pt.t,
+        };
+      },
+      draw(p,twk,a){
+        const r=p.r;
+        ctx.save();
+        ctx.globalAlpha=Math.min(a,0.92);
+        ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=r*8;
+        ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();
+        /* cool blue-white core */
+        ctx.fillStyle=p.tint; ctx.shadowColor=p.tint; ctx.shadowBlur=r*4;
+        ctx.globalAlpha=Math.min(a*twk*1.2,0.95);
+        ctx.beginPath();ctx.arc(p.x,p.y,r*0.45,0,Math.PI*2);ctx.fill();
+        /* tiny cross spike — precise */
+        ctx.globalAlpha=a*twk*0.65;
+        ctx.fillRect(p.x-r*0.12,p.y-r*2.8,r*0.24,r*5.6);
+        ctx.fillRect(p.x-r*2.8,p.y-r*0.12,r*5.6,r*0.24);
+        ctx.restore();
+      }
+    },
+
+    Troubleshoot:{
+      /* Quick darting streaks with motion trail */
+      spawn(pt,wire,score){
+        const s=score/4;
+        const next=nearNext(pt,wire);
+        const[nx,ny]=perp(pt,next);
+        const side=Math.random()<.5?1:-1;
+        const spd=cr(20,45)*(0.5+s*0.7);
+        const ang=Math.atan2(ny,nx)*side + cr(-0.6,0.6);
+        return{
+          type:'troubleshoot',
+          x:pt.x+nx*side*cr(2,8), y:pt.y+ny*side*cr(2,8),
+          vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd - cr(5,15),
+          r:cr(1.2,2.4)*(0.4+s*0.6),
+          life:1.0, decay:cr(0.80,1.60),  /* faster — streaks are brief */
+          phase:Math.random()*Math.PI*2, twkSpd:cr(10,20),
+          col:wire.color, tint:'#ffffff', score:s, t:pt.t,
+          ang,
+        };
+      },
+      draw(p,twk,a){
+        const r=p.r;
+        const speed=Math.hypot(p.vx,p.vy)||1;
+        const trailLen=r*(2.5+p.score*3.5);
+        ctx.save();
+        ctx.globalAlpha=Math.min(a*0.90,0.92);
+        /* streak trail */
+        ctx.strokeStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=r*5;
+        ctx.lineWidth=r*0.9; ctx.lineCap='round';
+        ctx.beginPath();
+        ctx.moveTo(p.x-p.vx/speed*trailLen, p.y-p.vy/speed*trailLen);
+        ctx.lineTo(p.x,p.y); ctx.stroke();
+        /* bright white tip */
+        ctx.fillStyle=p.tint; ctx.shadowColor=p.tint; ctx.shadowBlur=r*3;
+        ctx.globalAlpha=Math.min(a,0.95);
+        ctx.beginPath();ctx.arc(p.x,p.y,r*0.55,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    },
+
+    Explain:{
+      /* Soft large glowing orbs with golden shimmer */
+      spawn(pt,wire,score){
+        const s=score/4;
+        const next=nearNext(pt,wire);
+        const[nx,ny]=perp(pt,next);
+        const side=Math.random()<.5?1:-1;
+        return{
+          type:'explain',
+          x:pt.x+nx*side*cr(5,14), y:pt.y+ny*side*cr(5,14),
+          vx:nx*side*cr(4,12)+cr(-3,3), vy:-cr(4,14),
+          r:cr(3.5,6.5)*(0.4+s*0.7),
+          life:1.0, decay:cr(0.28,0.55),  /* long-lived — soft lantern */
+          phase:Math.random()*Math.PI*2, twkSpd:cr(2,5),
+          col:wire.color, tint:'#ffe080', score:s, t:pt.t,
+        };
+      },
+      draw(p,twk,a){
+        const r=p.r*(0.8+twk*0.2);
+        ctx.save();
+        /* large soft outer bloom */
+        ctx.globalAlpha=Math.min(a*0.40,0.55);
+        ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=r*8;
+        ctx.beginPath();ctx.arc(p.x,p.y,r*2.2,0,Math.PI*2);ctx.fill();
+        /* golden mid layer */
+        ctx.globalAlpha=Math.min(a*0.70,0.80);
+        ctx.fillStyle=p.tint; ctx.shadowColor=p.tint; ctx.shadowBlur=r*5;
+        ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();
+        /* white centre */
+        ctx.fillStyle='#ffffff'; ctx.shadowColor='#ffffff'; ctx.shadowBlur=r*2;
+        ctx.globalAlpha=Math.min(a*twk,0.90);
+        ctx.beginPath();ctx.arc(p.x,p.y,r*0.38,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    },
+
+    Teamwork:{
+      /* Expanding rings that pulse outward */
+      spawn(pt,wire,score){
+        const s=score/4;
+        const next=nearNext(pt,wire);
+        const[nx,ny]=perp(pt,next);
+        const side=Math.random()<.5?1:-1;
+        return{
+          type:'teamwork',
+          x:pt.x+nx*side*cr(3,9), y:pt.y+ny*side*cr(3,9),
+          vx:cr(-4,4), vy:-cr(3,10),
+          r:cr(1.5,3.0),     /* starting radius — expands over life */
+          rMax:cr(8,18)*(0.5+s*0.7),
+          life:1.0, decay:cr(0.35,0.65),
+          phase:Math.random()*Math.PI*2, twkSpd:cr(3,6),
+          col:wire.color, tint:'#80ffb0', score:s, t:pt.t,
+        };
+      },
+      draw(p,twk,a){
+        const progress=1-p.life;
+        const r=p.r + (p.rMax-p.r)*progress;  /* expands */
+        ctx.save();
+        /* expanding ring */
+        ctx.globalAlpha=Math.min(a*(1-progress*0.6),0.85);
+        ctx.strokeStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=r*3;
+        ctx.lineWidth=Math.max(0.8,2.0*p.life);
+        ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.stroke();
+        /* green-tint inner glow dot at centre */
+        ctx.fillStyle=p.tint; ctx.shadowColor=p.tint; ctx.shadowBlur=r*2;
+        ctx.globalAlpha=Math.min(a*twk*0.70,0.75);
+        ctx.beginPath();ctx.arc(p.x,p.y,p.r*0.8*p.life,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    },
+  };
+
+  /* ── Helpers ── */
+  function nearNext(pt,wire){
+    /* find next point on wire after pt — used for perpendicular calc */
+    return{x:pt.x+1,y:pt.y};  /* fallback; actual pts passed from tick */
+  }
+  function perp(p0,p1){
+    const dx=p1.x-p0.x, dy=p1.y-p0.y, len=Math.hypot(dx,dy)||1;
+    return[-dy/len, dx/len];
+  }
+
+  /* ── Pool and spawn timers ── */
+  const pool=[];
+  const MAX=120;
+  /* per-wire, per-dimension timer */
+  const nxt={};
+  WIRES.forEach(w=>['Build','Logic','Troubleshoot','Explain','Teamwork'].forEach(d=>{
+    nxt[w.id+'_'+d]=0;
+  }));
+
+  return{
+    tick(dt,allPts){
+      /* age */
+      for(let i=pool.length-1;i>=0;i--){
+        const p=pool[i];
+        p.x+=p.vx*dt; p.y+=p.vy*dt;
+        p.life-=p.decay*dt;
+        p.phase+=p.twkSpd*dt;
+        if(p.life<=0) pool.splice(i,1);
+      }
+      /* spawn — each dim independently driven by its own score */
+      WIRES.forEach((wire,wi)=>{
+        if(!isEnrolled(wire.id)) return;
+        const pts=allPts[wi];
+        if(!pts||pts.length<4) return;
+
+        ['Build','Logic','Troubleshoot','Explain','Teamwork'].forEach(dimId=>{
+          const score=compScores[dimId]||0;
+          if(score===0) return;  /* silent if unscored */
+          const key=wire.id+'_'+dimId;
+          if(time<nxt[key]) return;
+          if(pool.length>=MAX) return;
+
+          /* interval: 1 star=slow, 4 stars=rapid */
+          const baseInt=[0, 0.55, 0.28, 0.14, 0.06][score]||0.55;
+          nxt[key]=time+cr(baseInt*0.7, baseInt*1.3);
+
+          /* pick spawn point on wire */
+          const idx=2+Math.floor(Math.random()*(pts.length-4));
+          const p0=pts[idx];
+          const p1=pts[Math.min(idx+1,pts.length-1)];
+
+          /* build perpendicular using actual wire direction */
+          const dx=p1.x-p0.x, dy=p1.y-p0.y, len=Math.hypot(dx,dy)||1;
+          const nx=-dy/len, ny=dx/len;
+
+          /* construct particle via dim spawner, overriding the nearNext helper */
+          const fakePt={...p0, nx, ny};
+          const cfg=DIMS[dimId];
+          /* spawn with proper perpendicular */
+          const side=Math.random()<.5?1:-1;
+          const s=score/4;
+          let particle;
+          if(dimId==='Build'){
+            particle={type:'build',x:p0.x+nx*side*cr(4,10),y:p0.y+ny*side*cr(4,10),
+              vx:nx*side*cr(8,20)+cr(-4,4),vy:-cr(10,24),
+              r:cr(2.8,5.5)*(0.5+s*0.7),life:1.0,decay:cr(0.35,0.70),
+              phase:Math.random()*Math.PI*2,twkSpd:cr(3,7),
+              col:wire.color,tint:'#ffe0c0',score:s,t:p0.t};
+          }else if(dimId==='Logic'){
+            particle={type:'logic',x:p0.x+nx*side*cr(2,7),y:p0.y+ny*side*cr(2,7),
+              vx:nx*side*cr(5,15)+cr(-3,3),vy:-cr(6,18),
+              r:cr(1.4,2.8)*(0.4+s*0.6),life:1.0,decay:cr(0.45,0.85),
+              phase:Math.random()*Math.PI*2,twkSpd:cr(8,16),
+              col:wire.color,tint:'#c0d8ff',score:s,t:p0.t};
+          }else if(dimId==='Troubleshoot'){
+            const spd=cr(20,45)*(0.5+s*0.7);
+            const ang=Math.atan2(ny,nx)*side+cr(-0.6,0.6);
+            particle={type:'troubleshoot',x:p0.x+nx*side*cr(2,8),y:p0.y+ny*side*cr(2,8),
+              vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-cr(5,15),
+              r:cr(1.2,2.4)*(0.4+s*0.6),life:1.0,decay:cr(0.80,1.60),
+              phase:Math.random()*Math.PI*2,twkSpd:cr(10,20),
+              col:wire.color,tint:'#ffffff',score:s,t:p0.t,ang,vxOrig:Math.cos(ang)*spd,vyOrig:Math.sin(ang)*spd};
+          }else if(dimId==='Explain'){
+            particle={type:'explain',x:p0.x+nx*side*cr(5,14),y:p0.y+ny*side*cr(5,14),
+              vx:nx*side*cr(4,12)+cr(-3,3),vy:-cr(4,14),
+              r:cr(3.5,6.5)*(0.4+s*0.7),life:1.0,decay:cr(0.28,0.55),
+              phase:Math.random()*Math.PI*2,twkSpd:cr(2,5),
+              col:wire.color,tint:'#ffe080',score:s,t:p0.t};
+          }else{/* Teamwork */
+            particle={type:'teamwork',x:p0.x+nx*side*cr(3,9),y:p0.y+ny*side*cr(3,9),
+              vx:cr(-4,4),vy:-cr(3,10),
+              r:cr(1.5,3.0),rMax:cr(8,18)*(0.5+s*0.7),life:1.0,decay:cr(0.35,0.65),
+              phase:Math.random()*Math.PI*2,twkSpd:cr(3,6),
+              col:wire.color,tint:'#80ffb0',score:s,t:p0.t};
+          }
+          pool.push(particle);
+        });
+      });
+    },
+
+    draw(){
+      for(const p of pool){
+        const twk=0.5+0.5*Math.sin(p.phase);
+        const lifeFade=p.life<0.35?p.life/0.35:1.0;
+        const a=lifeFade*(0.60+p.score*0.35);
+        if(a<0.04) continue;
+        DIMS[p.type[0].toUpperCase()+p.type.slice(1)]?.draw(p,twk,a);
+      }
+    },
+
+    clear(wireColor){
+      const col=typeof wireColor==='string'&&wireColor.startsWith('#')
+        ? wireColor
+        : WIRES.find(w=>w.id===wireColor)?.color;
+      if(!col) return;
+      for(let i=pool.length-1;i>=0;i--){
+        if(pool[i].col===col) pool.splice(i,1);
+      }
+    },
+  };
+})();
+
+/* ══════════════════════════════════════════════
+   MILESTONE BADGE SYSTEM
+   Bursts fire at wire node positions when badges load.
+   Floating emoji + radial ring + sparkle shower.
+   Airtable: Milestones table with Student (linked),
+   Badge_Type, Programme, Date, Notes fields.
+   ══════════════════════════════════════════════ */
+const MILESTONES=(function(){
+  const bursts=[];   /* active burst animations */
+  const shown=new Set(); /* badge IDs already shown — prevent re-fire */
+  let pending=[];    /* badges waiting for wire positions to be ready */
+
+  const BADGE_ICONS={
+    camp:'🏕', challenge:'⚔', presentation:'🎤',
+    competition:'🏆', dsa:'📜', award:'🌟',
+    default:'🏅',
+  };
+  const BADGE_COLS={
+    camp:'#F5A623', challenge:'#E8553E', presentation:'#00C8B4',
+    competition:'#FFD700', dsa:'#4DD68A', award:'#FFD700',
+    default:'#FFD700',
+  };
+
+  function fireAt(x,y,badge,wireCol){
+    const icon=BADGE_ICONS[badge.type?.toLowerCase()]||BADGE_ICONS.default;
+    const col =BADGE_COLS[badge.type?.toLowerCase()]||wireCol||BADGE_COLS.default;
+    /* ring + sparkle particles */
+    const particles=[];
+    for(let i=0;i<16;i++){
+      const ang=i*(Math.PI*2/16)+Math.random()*0.3;
+      const spd=cr2(60,120);
+      particles.push({
+        x,y, vx:Math.cos(ang)*spd, vy:Math.sin(ang)*spd,
+        r:cr2(1.5,3.5), life:1.0, decay:cr2(0.8,1.4),
+        col:Math.random()<0.5?col:'#ffffff',
+      });
+    }
+    bursts.push({x,y,icon,col,wireCol:wireCol||col,
+                 ring:0,ringMax:55, life:1.0, decay:1.6,
+                 particles, emojiY:y, emojiLife:1.0});
+  }
+  function cr2(a,b){return a+(b-a)*Math.random();}
+
+  return{
+    /* Called after student loads — fetch their badges from Airtable */
+    async load(recId){
+      pending=[];
+      if(!recId||!AT.token||!AT.base) return;
+      try{
+        /* Query Milestones table filtered by Student linked record */
+        const url='https://api.airtable.com/v0/'+AT.base+'/Milestones'
+          +'?filterByFormula='+encodeURIComponent('FIND("'+recId+'",ARRAYJOIN({Student}))')
+          +'&fields%5B%5D=Badge_Type&fields%5B%5D=Programme&fields%5B%5D=Date&fields%5B%5D=Notes';
+        const res=await fetch(url,{headers:AT.headers()});
+        if(!res.ok) return;
+        const data=await res.json();
+        pending=(data.records||[]).filter(r=>!shown.has(r.id));
+      }catch(e){ /* Milestones table may not exist yet — silent fail */ }
+    },
+
+    /* Called from draw loop when wire positions are available */
+    tryFire(allPts){
+      if(!pending.length) return;
+      const ready=[];
+      pending.forEach(rec=>{
+        const prog=(rec.fields.Programme||'').toLowerCase();
+        const wireId=prog.includes('ai')?'ai':prog.includes('rob')?'rob':'stem';
+        const wi=WIRES.findIndex(w=>w.id===wireId);
+        if(wi<0||!allPts[wi]||!allPts[wi].length) return;
+        if(!isEnrolled(wireId)) return;
+        const yr=getStudentYear(wireId);
+        const node=NODES[yr-1]||NODES[NODES.length-1];
+        const pts=allPts[wi];
+        const ti=Math.round(node.t*(pts.length-1));
+        const pt=pts[Math.min(ti,pts.length-1)];
+        shown.add(rec.id);
+        fireAt(pt.x,pt.y,rec.fields,WIRES[wi].color);
+        ready.push(rec.id);
+      });
+      pending=pending.filter(r=>!ready.includes(r.id));
+    },
+
+    tick(dt){
+      for(let i=bursts.length-1;i>=0;i--){
+        const b=bursts[i];
+        b.life-=b.decay*dt;
+        b.ring+=120*dt;
+        b.emojiY-=28*dt;
+        b.emojiLife-=b.decay*0.6*dt;
+        b.particles.forEach(p=>{
+          p.x+=p.vx*dt; p.y+=p.vy*dt;
+          p.vy+=20*dt; /* gentle gravity */
+          p.life-=p.decay*dt;
+        });
+        if(b.life<=0) bursts.splice(i,1);
+      }
+    },
+
+    draw(){
+      for(const b of bursts){
+        /* expanding ring */
+        ctx.save();
+        ctx.globalAlpha=Math.max(0,b.life*0.85);
+        ctx.strokeStyle=b.col; ctx.shadowColor=b.col;
+        ctx.shadowBlur=12*b.life; ctx.lineWidth=2.5*b.life;
+        ctx.beginPath();ctx.arc(b.x,b.y,b.ring*(1-b.life*0.2),0,Math.PI*2);ctx.stroke();
+        /* second ring */
+        if(b.ring>20){
+          ctx.globalAlpha=Math.max(0,b.life*0.45);
+          ctx.lineWidth=1.2*b.life;
+          ctx.beginPath();ctx.arc(b.x,b.y,b.ring*0.55,0,Math.PI*2);ctx.stroke();
+        }
+        ctx.restore();
+        /* sparkle particles */
+        for(const p of b.particles){
+          if(p.life<=0) continue;
+          ctx.save();
+          ctx.globalAlpha=p.life*0.90;
+          ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=p.r*4;
+          ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.5,p.r*p.life),0,Math.PI*2);ctx.fill();
+          ctx.restore();
+        }
+        /* floating emoji badge */
+        if(b.emojiLife>0){
+          ctx.save();
+          ctx.globalAlpha=Math.min(b.emojiLife,1.0);
+          ctx.font=`${Math.round(16+8*b.emojiLife)}px serif`;
+          ctx.textAlign='center';
+          ctx.fillText(b.icon, b.x, b.emojiY);
+          ctx.restore();
+        }
+      }
+    },
+
+    /* reset when student changes */
+    reset(){ bursts.length=0; pending=[]; shown.clear(); },
+  };
+})();
+
+/* ── MAIN LOOP ── */
+const SEGS=200;
+let lastT=performance.now();
+function draw(now){
+  const dt=Math.min((now-lastT)/1000,.05);lastT=now;time+=dt;
+  const w=W(),h=H();
+  ctx.clearRect(0,0,w,h);drawBg();
+  GALAXY.tick(dt);
+  computeAvgs();tickSurge(dt);
+  if(window._demoMode) tickDemo(dt);
+  lastAllPts=WIRES.map(wd=>buildPts(wd,SEGS,w,h));
+  SPARKS.tick(dt,lastAllPts);
+  FLARES.tick(dt,lastAllPts);
+  SOLAR.tick(dt,lastAllPts);
+  COMP_STARS.tick(dt,lastAllPts);
+  MILESTONES.tick(dt);
+  MILESTONES.tryFire(lastAllPts);
+  const hwId=hovWire?.wire?.id;
+  WIRES.forEach((wd,i)=>{ if(wd.id!==hwId) drawWire(lastAllPts[i],wd,false); });
+  if(hwId){ const i=WIRES.findIndex(w=>w.id===hwId); if(i>=0) drawWire(lastAllPts[i],WIRES[i],true); }
+  SPARKS.draw();
+  FLARES.draw();
+  SOLAR.draw();
+  COMP_STARS.draw();
+  MILESTONES.draw();
+  /* draw 1 node per enrolled wire at studentYear */
+  WIRES.forEach((wire,wi)=>{
+    if(!isEnrolled(wire.id)) return;
+    const yr=getStudentYear(wire.id);
+    const node=NODES[yr-1]||NODES[NODES.length-1];
+    const pts=lastAllPts[wi];
+    if(!pts||pts.length<2) return;
+    const ti=Math.round(node.t*(pts.length-1));
+    const pt=pts[Math.min(ti,pts.length-1)];
+    drawWireNode(pt,node,wire,hovNode===node);
+  });
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+/* ── TOOLTIPS ── */
+const wireTip=document.getElementById('wire-tip');
+const nodeLbl=document.getElementById('node-label');
+function placeEl(el,mx,my,elW){
+  let lx=mx+18,ty=my-95;
+  if(lx+elW>W()-12) lx=mx-elW-18;
+  if(ty<12) ty=12;
+  if(ty+160>H()-55) ty=H()-170;
+  el.style.left=lx+'px';el.style.top=ty+'px';
+}
+function hideTips(){ wireTip.style.opacity='0'; nodeLbl.style.opacity='0'; }
+function showWireTip(fw,mx,my){
+  const wd=fw.wire;
+  document.getElementById('wt-label').textContent=wd.label;
+  document.getElementById('wt-label').style.color=wd.color;
+  document.getElementById('wt-name').textContent=wd.label+' Programme';
+  document.getElementById('wt-name').style.color=wd.color;
+  const pct=Math.round(wd.score/14);
+  document.getElementById('wt-val').textContent=wd.score+' / 1400 XP  ('+pct+'%)';
+  const fill=document.getElementById('wt-fill');
+  fill.style.width=pct+'%';fill.style.background=wd.color;
+  wireTip.style.borderLeftColor=wd.color;
+  placeEl(wireTip,mx,my,200);wireTip.style.opacity='1';nodeLbl.style.opacity='0';
+}
+function showNodeTip(node,mx,my){
+  document.getElementById('nl-name').textContent=node.label;
+  document.getElementById('nl-ai').textContent  =isEnrolled('ai')  ?getWireScore('ai')  +' XP':'—';
+  document.getElementById('nl-rob').textContent =isEnrolled('rob') ?getWireScore('rob') +' XP':'—';
+  document.getElementById('nl-stem').textContent=isEnrolled('stem')?getWireScore('stem')+' XP':'—';
+  placeEl(nodeLbl,mx,my,172);nodeLbl.style.opacity='1';wireTip.style.opacity='0';
+}
+
+/* ── MOUSE / TOUCH ── */
+function getXY(e){
+  const r=C.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  return[src.clientX-r.left,src.clientY-r.top];
+}
+C.addEventListener('mousemove',e=>{
+  const [mx,my]=getXY(e);
+  const fn=hitNode(mx,my);
+  if(fn){ hovNode=fn;hovWire=null;C.style.cursor='pointer';showNodeTip(fn,mx,my);return; }
+  const fw=hitWire(mx,my,lastAllPts);
+  if(fw){ hovWire=fw;hovNode=null;C.style.cursor='crosshair';showWireTip(fw,mx,my); }
+  else  { hovWire=null;hovNode=null;C.style.cursor='default';hideTips(); }
+});
+C.addEventListener('click',e=>{
+  const [mx,my]=getXY(e);
+  const f=hitNode(mx,my);if(f) openPanel(f);
+});
+C.addEventListener('touchend',e=>{
+  const [mx,my]=getXY(e);
+  const fn=hitNode(mx,my);
+  if(fn){ hideTips();openPanel(fn); } else { setTimeout(hideTips,2500); }
+});
+C.addEventListener('mouseleave',()=>{ hovNode=null;hovWire=null;hideTips(); });
+
+/* ── PANEL ── */
+function openPanel(node){
+  const aiS=getWireScore('ai'),robS=getWireScore('rob'),stemS=getWireScore('stem');
+  const aiE=isEnrolled('ai'),robE=isEnrolled('rob'),stemE=isEnrolled('stem');
+  const top=Math.max(aiE?aiS:0,robE?robS:0,stemE?stemS:0);
+  const level=top<200?'L1':top<500?'L2':top<900?'L3':top<1400?'L4':'L5';
+  const progs=[aiE?'AI L'+getStudentYear('ai'):null,robE?'Robotics L'+getStudentYear('rob'):null,stemE?'STEM L'+getStudentYear('stem'):null].filter(Boolean).join(' · ')||'No programme enrolled';
+  document.getElementById('p-title').textContent=node.label;
+  document.getElementById('p-title').style.color=node.lc;
+  document.getElementById('p-sub').textContent=progs;
+  const stats=[
+    aiE  ?{n:aiS,  l:'AI XP',      c:COL.ai}  :{n:'—',l:'AI Coding', c:'#4a6a8a'},
+    robE ?{n:robS, l:'Robotics XP', c:COL.rob} :{n:'—',l:'Robotics',  c:'#4a6a8a'},
+    stemE?{n:stemS,l:'STEM XP',     c:COL.stem}:{n:'—',l:'STEM',      c:'#4a6a8a'},
+    {n:level,l:'Level',c:node.lc},
+  ];
+  document.getElementById('p-stats').innerHTML=stats.map(s=>`<div class="p-stat"><div class="n" style="color:${s.c}">${s.n}</div><div class="l">${s.l}</div></div>`).join('');
+  const bars=[];
+  if(aiE)   bars.push({nm:'AI Coding',   vl:aiS  +' / 1400 XP',pct:Math.round(aiS/14),  c:COL.ai});
+  if(robE)  bars.push({nm:'Robotics',    vl:robS +' / 1400 XP',pct:Math.round(robS/14), c:COL.rob});
+  if(stemE) bars.push({nm:'STEM', vl:stemS+' / 1400 XP',pct:Math.round(stemS/14),c:COL.stem});
+  if(!bars.length) bars.push({nm:'No programmes enrolled',vl:'Tick a programme in Teacher Input',pct:0,c:'#4a6a8a'});
+  document.getElementById('p-bars').innerHTML=bars.map(b=>`<div class="p-bar-row"><div class="p-bar-label"><span class="nm">${b.nm}</span><span class="vl" style="color:${b.c}">${b.vl}</span></div><div class="p-track"><div class="p-fill" style="background:${b.c}" data-pct="${b.pct}"></div></div></div>`).join('');
+  const tags=[];
+  if(aiE)   tags.push({txt:'AI L'+getStudentYear('ai')  +' · '+aiS  +' XP',c:COL.ai,  b:'rgba(232,85,62,.08)'});
+  if(robE)  tags.push({txt:'Rob L'+getStudentYear('rob') +' · '+robS +' XP',c:COL.rob, b:'rgba(245,166,35,.08)'});
+  if(stemE) tags.push({txt:'STEM L'+getStudentYear('stem')+' · '+stemS+' XP',c:COL.stem,b:'rgba(0,200,180,.07)'});
+  tags.push({txt:level,c:node.lc,b:'rgba(139,163,191,.10)'});
+  document.getElementById('p-tags').innerHTML=tags.map(t=>`<span class="p-tag" style="color:${t.c};background:${t.b};border-color:${t.c}55">${t.txt}</span>`).join('');
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('panel-overlay').classList.add('open');
+  hideTips();
+  setTimeout(()=>document.querySelectorAll('.p-fill').forEach(el=>{el.style.width=el.dataset.pct+'%';}),60);
+  document.getElementById('hint').style.opacity='0';
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('panel-overlay').classList.remove('open');
+}
+document.getElementById('panel-close').addEventListener('click',closePanel);
+document.getElementById('close-btn').addEventListener('click',closePanel);
+document.getElementById('panel-overlay').addEventListener('click',closePanel);
+
+/* ── TEACHER INPUT DRAWER ── */
+const toggle=document.getElementById('input-toggle');
+const drawer=document.getElementById('input-drawer');
+toggle.addEventListener('click',()=>{
+  drawerOpen=!drawerOpen;
+  drawer.classList.toggle('open',drawerOpen);
+  toggle.textContent=drawerOpen?'✕ Close':'✎ Teacher Input';
+  if(drawerOpen) liveUpdateGlow();
+  else           initWireAvg();
+});
+
+/* ── AIRTABLE CONFIG ── */
+const AT={
+  get token(){ return localStorage.getItem('csa_at_token')||''; },
+  get base(){  return localStorage.getItem('csa_at_base')||''; },
+  table:'Students',
+  get url(){ return 'https://api.airtable.com/v0/'+this.base+'/'+this.table; },
+  headers(){ return{'Authorization':'Bearer '+this.token,'Content-Type':'application/json'}; }
+};
+(function(){
+  const t=document.getElementById('at-token');
+  const b=document.getElementById('at-base');
+  if(t) t.value=AT.token;
+  if(b) b.value=AT.base;
+})();
+document.getElementById('at-save-config').addEventListener('click',()=>{
+  localStorage.setItem('csa_at_token',document.getElementById('at-token').value.trim());
+  localStorage.setItem('csa_at_base', document.getElementById('at-base').value.trim());
+  document.getElementById('at-config').style.display='none';
+  atStatus('Config saved ✓','#00c8b4');
+  loadStudentList();
+});
+document.getElementById('at-settings-btn').addEventListener('click',()=>{
+  const cfg=document.getElementById('at-config');
+  cfg.style.display=cfg.style.display==='none'?'block':'none';
+});
+function atStatus(msg,col){
+  const el=document.getElementById('at-status');
+  if(el){ el.textContent=msg; el.style.color=col||'#4a6a8a'; }
+}
+
+/* ── LOAD STUDENT LIST ── */
+async function loadStudentList(){
+  if(!AT.token||!AT.base){ atStatus('⚙ Enter Airtable config (gear icon)','#F5A623'); return; }
+  atStatus('Loading students…');
+  try{
+    const res=await fetch(AT.url+'?fields%5B%5D=Name&fields%5B%5D=StudentID&sort%5B0%5D%5Bfield%5D=Name',{headers:AT.headers()});
+    if(!res.ok) throw new Error(res.status);
+    const data=await res.json();
+    const sel=document.getElementById('student-sel');
+    sel.innerHTML='<option value="">— Select student —</option>';
+    (data.records||[]).forEach(r=>{
+      const opt=document.createElement('option');
+      opt.value=r.id;
+      opt.textContent=r.fields.Name+(r.fields.StudentID?' ('+r.fields.StudentID+')':'');
+      sel.appendChild(opt);
+    });
+    atStatus((data.records||[]).length+' students loaded','#00c8b4');
+  }catch(e){ atStatus('⚠ Could not load — check config','#E8553E'); }
+}
+
+/* ── LOAD STUDENT SCORES ── */
+function applyData(d){
+  [['ai','AI'],['rob','Rob'],['stem','STEM']].forEach(([id,prefix])=>{
+    const enrolled=!!(d[prefix+'_Enrolled']||d[id+'_enrolled']||d[id+'Enrolled']);
+    const level=+(d[prefix+'_Level']||d[id+'_level']||d[id+'Level'])||1;
+    const xp=+(d[prefix+'_XP']||d[id+'_xp']||d[id+'XP'])||0;
+    ENROL[id].enrolled=enrolled;
+    ENROL[id].year=level;
+    setWireScore(id,xp);
+    uiSyncProg(id,enrolled,level,xp);
+  });
+  /* attendance streak — per-programme or global fallback */
+  STREAK['ai']  =+(d.AI_Streak  ||d.Attendance_Streak||0);
+  STREAK['rob'] =+(d.Rob_Streak ||d.Attendance_Streak||0);
+  STREAK['stem']=+(d.STEM_Streak||d.Attendance_Streak||0);
+  /* competency matrix */
+  loadCompFields(d);
+  initWireAvg();
+}
+/* ── LAST SAVED STATE — for revert ── */
+let lastSaved = null;  /* null = no student loaded / nothing saved yet */
+
+function storeSaved(fields){
+  lastSaved = {
+    ai:   { enrolled:!!(fields.AI_Enrolled||fields.ai_enrolled),   level:+(fields.AI_Level||fields.ai_level)||1,   xp:+(fields.AI_XP||fields.ai_xp)||0   },
+    rob:  { enrolled:!!(fields.Rob_Enrolled||fields.rob_enrolled),  level:+(fields.Rob_Level||fields.rob_level)||1,  xp:+(fields.Rob_XP||fields.rob_xp)||0  },
+    stem: { enrolled:!!(fields.STEM_Enrolled||fields.stem_enrolled),level:+(fields.STEM_Level||fields.stem_level)||1,xp:+(fields.STEM_XP||fields.stem_xp)||0 },
+  };
+  setDirty();
+}
+
+function ensureBaseline(){
+  /* take a zero snapshot the very first time anything changes */
+  if(!lastSaved){
+    lastSaved = {
+      ai:   {enrolled:false,level:1,xp:0},
+      rob:  {enrolled:false,level:1,xp:0},
+      stem: {enrolled:false,level:1,xp:0},
+    };
+  }
+}
+
+function isDirty(){
+  if(!lastSaved) return false;
+  for(const id of ['ai','rob','stem']){
+    const inp  = document.getElementById(id+'-inp');
+    const chk  = document.getElementById('enrol-'+id);
+    const ysel = document.getElementById('year-'+id);
+    if(!inp||!chk||!ysel) continue;
+    if(chk.checked !== lastSaved[id].enrolled) return true;
+    if(+ysel.value  !== lastSaved[id].level)   return true;
+    if(+inp.value   !== lastSaved[id].xp)      return true;
+  }
+  return false;
+}
+
+function setDirty(){
+  const dirty = isDirty();
+  const badge  = document.getElementById('unsaved-badge');
+  const revert = document.getElementById('revert-btn');
+  if(badge)  badge.style.display = dirty ? 'block' : 'none';
+  if(revert) revert.disabled     = !dirty;
+}
+
+function uiSyncProg(id,enrolled,level,xp){
+  const chk =document.getElementById('enrol-'+id);
+  const ysel=document.getElementById('year-'+id);
+  const inp =document.getElementById(id+'-inp');
+  const val =document.getElementById(id+'-val');
+  const bar =document.getElementById(id+'-bar');
+  const wrap=document.getElementById(id+'-slider-wrap');
+  if(chk)  chk.checked=enrolled;
+  if(ysel){ ysel.value=level; ysel.disabled=!enrolled; }
+  if(inp)  inp.value=xp;
+  if(val)  val.textContent=xp+' XP';
+  if(bar)  bar.style.width=Math.round(xp/14)+'%';
+  if(wrap){ wrap.style.opacity=enrolled?'1':'0.3'; wrap.style.pointerEvents=enrolled?'':'none'; }
+}
+
+document.getElementById('student-sel').addEventListener('change',async function(){
+  const recId=this.value;
+  if(!recId){ ['ai','rob','stem'].forEach(id=>uiSyncProg(id,false,1,0)); resetCompScores(); MILESTONES.reset(); initWireAvg(); return; }
+  atStatus('Loading…');
+  try{
+    const res=await fetch(AT.url+'/'+recId,{headers:AT.headers()});
+    if(!res.ok) throw new Error(res.status);
+    const rec=await res.json();
+    applyData(rec.fields||{});
+    storeSaved(rec.fields||{});   /* snapshot for revert */
+    MILESTONES.load(recId);      /* fetch badges for this student */
+    atStatus('Loaded: '+(rec.fields.Name||recId),'#00c8b4');
+  }catch(e){ atStatus('⚠ Load failed','#E8553E'); }
+});
+
+/* ── PROGRAMME CHECKBOX + YEAR SELECT ── */
+function clearEffects(id){
+  SPARKS.clear(id);
+  FLARES.clear(id);
+  SOLAR.clear(id);
+  COMP_STARS.clear(id);
+}
+
+function setupProg(id){
+  const chk =document.getElementById('enrol-'+id);
+  const ysel=document.getElementById('year-'+id);
+  const wrap=document.getElementById(id+'-slider-wrap');
+  const inp =document.getElementById(id+'-inp');
+  const val =document.getElementById(id+'-val');
+  const bar =document.getElementById(id+'-bar');
+  function refresh(){
+    const on=chk.checked;
+    ENROL[id].enrolled=on;
+    ENROL[id].year=parseInt(ysel.value);
+    ysel.disabled=!on;
+    wrap.style.opacity=on?'1':'0.3';
+    wrap.style.pointerEvents=on?'':'none';
+    if(on){
+      setWireScore(id,0);  /* start at 0 — teacher adjusts via slider */
+      inp.value=0;
+      val.textContent='0 XP';
+      bar.style.width='0%';
+      /* only re-seed this wire's avg — leave others untouched */
+      wireAvg[id]=0;
+    } else {
+      /* zero only this wire's score + avg — leave other wires' state intact */
+      setWireScore(id,0);
+      wireAvg[id]=0;
+      clearEffects(id);
+    }
+    /* update surge target without resetting other wires */
+    let maxId=null,maxVal=-1;
+    for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+    surgeWireId=maxId;
+    /* only call liveUpdateGlow when drawer is open — it reads all sliders */
+    if(drawerOpen) liveUpdateGlow();
+    ensureBaseline(); setDirty();
+  }
+  chk.addEventListener('change',refresh);
+  ysel.addEventListener('change',()=>{
+    ENROL[id].year=parseInt(ysel.value);
+    if(chk.checked){
+      const ms=[0,200,400,600,800,1000,1200,1400];
+      setWireScore(id,ms[ENROL[id].year]||0);
+      inp.value=getWireScore(id);
+      val.textContent=getWireScore(id)+' XP';
+      bar.style.width=Math.round(getWireScore(id)/14)+'%';
+    }
+    liveUpdateGlow();
+    ensureBaseline(); setDirty();
+  });
+  inp.addEventListener('input',()=>{
+    const v=+inp.value;
+    val.textContent=v+' XP';
+    bar.style.width=Math.round(v/14)+'%';
+    liveUpdateGlow();
+    ensureBaseline(); setDirty();
+  });
+}
+/* ══════════════════════════════════════════════
+   COMPETENCY MATRIX
+   5 dimensions, 1–4 star rubric + comment.
+   Stored in Airtable: Comp_Build, Comp_Logic,
+   Comp_Troubleshoot, Comp_Explain, Comp_Teamwork,
+   Comp_Comment.
+   ══════════════════════════════════════════════ */
+const COMP_DIMS = [
+  {id:'Build',       label:'Build & Make',       icon:'🔨'},
+  {id:'Logic',       label:'Logic & Code',        icon:'⚙'},
+  {id:'Troubleshoot',label:'Troubleshoot',        icon:'🔍'},
+  {id:'Explain',     label:'Explainability',      icon:'💡'},
+  {id:'Teamwork',    label:'Teamwork',            icon:'🤝'},
+];
+const compScores = {Build:0, Logic:0, Troubleshoot:0, Explain:0, Teamwork:0};
+
+function buildCompRows(){
+  const container = document.getElementById('comp-rows');
+  if(!container) return;
+  container.innerHTML = '';
+  COMP_DIMS.forEach(dim=>{
+    const row = document.createElement('div');
+    row.className = 'comp-row';
+    const lbl = document.createElement('div');
+    lbl.className = 'comp-label';
+    lbl.innerHTML = `<span>${dim.icon} ${dim.label}</span><span class="comp-score" id="cs-${dim.id}" style="color:#00C8B4">${compScores[dim.id] ? compScores[dim.id]+'/4' : '—'}</span>`;
+    const stars = document.createElement('div');
+    stars.className = 'comp-stars';
+    for(let s=1;s<=4;s++){
+      const btn = document.createElement('div');
+      btn.className = 'comp-star' + (compScores[dim.id]>=s?' lit':'');
+      btn.textContent = ['','★','★★','★★★','★★★★'][s].charAt(s-1)||'★';
+      btn.title = ['','Basic','Developing','Proficient','Advanced'][s];
+      btn.dataset.dim = dim.id;
+      btn.dataset.score = s;
+      btn.addEventListener('click', ()=>setCompScore(dim.id, s));
+      btn.addEventListener('touchend', e=>{ e.preventDefault(); setCompScore(dim.id, s); });
+      stars.appendChild(btn);
+    }
+    row.appendChild(lbl);
+    row.appendChild(stars);
+    container.appendChild(row);
+  });
+}
+
+function setCompScore(dimId, score){
+  /* toggle off if clicking the same score */
+  compScores[dimId] = compScores[dimId]===score ? 0 : score;
+  /* update star visuals */
+  document.querySelectorAll(`.comp-star[data-dim="${dimId}"]`).forEach(btn=>{
+    btn.classList.toggle('lit', compScores[dimId] >= +btn.dataset.score);
+  });
+  /* update label */
+  const lbl = document.getElementById('cs-'+dimId);
+  if(lbl) lbl.textContent = compScores[dimId] ? compScores[dimId]+'/4' : '—';
+  ensureBaseline(); setDirty();
+}
+
+function toggleComp(){
+  const body = document.getElementById('comp-body');
+  const chev = document.getElementById('comp-chevron');
+  if(!body||!chev) return;
+  const open = body.style.display === 'block';
+  body.style.display = open ? 'none' : 'block';
+  chev.classList.toggle('open', !open);
+}
+
+function resetCompScores(){
+  COMP_DIMS.forEach(d=>{ compScores[d.id]=0; });
+  const el = document.getElementById('comp-comment');
+  if(el) el.value='';
+  buildCompRows();
+}
+
+function getCompFields(){
+  const el = document.getElementById('comp-comment');
+  return {
+    Comp_Build:        compScores.Build,
+    Comp_Logic:        compScores.Logic,
+    Comp_Troubleshoot: compScores.Troubleshoot,
+    Comp_Explain:      compScores.Explain,
+    Comp_Teamwork:     compScores.Teamwork,
+    Comp_Comment:      el ? el.value.trim() : '',
+  };
+}
+
+function loadCompFields(d){
+  compScores.Build        = +(d.Comp_Build||0);
+  compScores.Logic        = +(d.Comp_Logic||0);
+  compScores.Troubleshoot = +(d.Comp_Troubleshoot||0);
+  compScores.Explain      = +(d.Comp_Explain||0);
+  compScores.Teamwork     = +(d.Comp_Teamwork||0);
+  const el = document.getElementById('comp-comment');
+  if(el) el.value = d.Comp_Comment||'';
+  buildCompRows();
+}
+
+/* mark dirty when comment changes */
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildCompRows();
+  const cc = document.getElementById('comp-comment');
+  if(cc) cc.addEventListener('input', ()=>{ ensureBaseline(); setDirty(); });
+});
+
+/* ══════════════════════════════════════════════
+   DEMO MODE  (?demo=1)
+   All 3 wires auto-enrolled, XP climbs 0→1400
+   across all 7 levels, then resets and loops.
+   Phase-offset so each wire peaks at different times.
+   ══════════════════════════════════════════════ */
+window._demoMode = false;
+const DEMO = {
+  duration: 28,    /* seconds for full 0→1400 cycle per wire */
+  timers:  {ai:0, rob:8, stem:16},  /* phase offsets */
+  running: false,
+};
+
+function startDemo(){
+  window._demoMode = true;
+  DEMO.running = true;
+  /* enrol all wires */
+  ['ai','rob','stem'].forEach(id=>{
+    ENROL[id].enrolled = true;
+    ENROL[id].year = 1;
+    setWireScore(id, 0);
+    wireAvg[id] = 0;
+  });
+  /* show demo badge */
+  const db = document.getElementById('demo-badge');
+  if(db) db.style.display = 'block';
+}
+
+function tickDemo(dt){
+  if(!DEMO.running) return;
+  ['ai','rob','stem'].forEach(id=>{
+    DEMO.timers[id] = (DEMO.timers[id] + dt) % DEMO.duration;
+    const frac = DEMO.timers[id] / DEMO.duration;       /* 0→1 */
+    const xp   = Math.round(frac * 1400);
+    const year = Math.min(7, Math.floor(frac * 7) + 1);
+    setWireScore(id, xp);
+    ENROL[id].year = year;
+    /* directly set wireAvg for instant visual response */
+    wireAvg[id] = xp / 1400;
+  });
+  /* update surgeWireId */
+  let maxId=null,maxVal=-1;
+  for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+  surgeWireId=maxId;
+}
+
+setupProg('ai');
+setupProg('rob');
+setupProg('stem');
+
+function liveUpdateGlow(){
+  ['ai','rob','stem'].forEach(id=>{
+    const inp=document.getElementById(id+'-inp');
+    if(inp) wireAvg[id]=Math.min(+inp.value/1400,1);
+  });
+  let maxId=null,maxVal=-1;
+  for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+  surgeWireId=maxId;
+}
+
+/* ── APPLY ── */
+document.getElementById('apply-btn').addEventListener('click',async()=>{
+  ['ai','rob','stem'].forEach(id=>{
+    const inp=document.getElementById(id+'-inp');
+    if(inp) setWireScore(id,+inp.value);
+  });
+  for(const w of WIRES) wireAvg[w.id]=w.score/1400;
+  let maxId=null,maxVal=-1;
+  for(const w of WIRES) if(wireAvg[w.id]>maxVal){maxVal=wireAvg[w.id];maxId=w.id;}
+  surgeWireId=maxId; surgeT=-1; surgeNextFire=time+0.5;
+  /* save to Airtable */
+  const recId=document.getElementById('student-sel').value;
+  if(recId&&AT.token&&AT.base){
+    atStatus('Saving…');
+    try{
+      const fields={
+        AI_Enrolled:isEnrolled('ai'),   AI_Level:getStudentYear('ai'),   AI_XP:getWireScore('ai'),
+        Rob_Enrolled:isEnrolled('rob'), Rob_Level:getStudentYear('rob'), Rob_XP:getWireScore('rob'),
+        STEM_Enrolled:isEnrolled('stem'),STEM_Level:getStudentYear('stem'),STEM_XP:getWireScore('stem'),
+        ...getCompFields(),
+      };
+      const res=await fetch(AT.url+'/'+recId,{method:'PATCH',headers:AT.headers(),body:JSON.stringify({fields})});
+      if(!res.ok) throw new Error(res.status);
+      atStatus('Saved ✓','#00c8b4');
+      /* snapshot the freshly saved state so revert knows the new baseline */
+      storeSaved({AI_Enrolled:isEnrolled('ai'),AI_Level:getStudentYear('ai'),AI_XP:getWireScore('ai'),Rob_Enrolled:isEnrolled('rob'),Rob_Level:getStudentYear('rob'),Rob_XP:getWireScore('rob'),STEM_Enrolled:isEnrolled('stem'),STEM_Level:getStudentYear('stem'),STEM_XP:getWireScore('stem')});
+    }catch(e){ atStatus('⚠ Save failed','#E8553E'); }
+  } else if(!recId){
+    atStatus('No student selected — changes applied locally','#F5A623');
+  }
+  /* always snapshot on Apply so Revert always has a baseline */
+  storeSaved({AI_Enrolled:isEnrolled('ai'),AI_Level:getStudentYear('ai'),AI_XP:getWireScore('ai'),Rob_Enrolled:isEnrolled('rob'),Rob_Level:getStudentYear('rob'),Rob_XP:getWireScore('rob'),STEM_Enrolled:isEnrolled('stem'),STEM_Level:getStudentYear('stem'),STEM_XP:getWireScore('stem')});
+  emitSave();
+  /* toast */
+  const toast=document.createElement('div');
+  toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,200,180,.14);border:1px solid rgba(0,200,180,.35);border-radius:10px;padding:10px 20px;font-size:12px;color:#00c8b4;pointer-events:none;z-index:999;transition:opacity .5s';
+  toast.textContent='Applied ✓';
+  document.body.appendChild(toast);
+  setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>toast.remove(),600);},1200);
+});
+
+/* ── POSTMESSAGE BRIDGE ── */
+/* ── REVERT HANDLER ── */
+document.getElementById('revert-btn').addEventListener('click', async function(){
+  const recId = document.getElementById('student-sel').value;
+  if(!recId && !lastSaved){ atStatus('No student selected','#F5A623'); return; }
+  /* If Airtable is configured, re-fetch live — most accurate revert */
+  if(recId && AT.token && AT.base){
+    atStatus('Reverting…');
+    this.disabled = true;
+    try{
+      const res = await fetch(AT.url+'/'+recId, {headers:AT.headers()});
+      if(!res.ok) throw new Error(res.status);
+      const rec = await res.json();
+      applyData(rec.fields||{});
+      storeSaved(rec.fields||{});
+      atStatus('Reverted to saved ✓','#F5A623');
+    }catch(e){
+      /* Airtable unavailable — fall back to in-memory lastSaved */
+      if(lastSaved) revertToMemory();
+      else atStatus('⚠ Revert failed','#E8553E');
+    }
+    this.disabled = true;  /* revert clears dirty, so disable again */
+  } else if(lastSaved){
+    /* No Airtable — revert from in-memory snapshot */
+    revertToMemory();
+    atStatus('Reverted to last saved ✓','#F5A623');
+  }
+});
+
+function revertToMemory(){
+  if(!lastSaved) return;
+  ['ai','rob','stem'].forEach(id=>{
+    const s = lastSaved[id];
+    ENROL[id].enrolled = s.enrolled;
+    ENROL[id].year     = s.level;
+    setWireScore(id, s.xp);
+    uiSyncProg(id, s.enrolled, s.level, s.xp);
+    if(!s.enrolled) clearEffects(id);
+  });
+  initWireAvg();
+  setDirty();
+}
+
+/* ══════════════════════════════════════════════
+   RFID DUPLICATE TAP GUARD
+   Tracks last tap per card+activity key.
+   Returns true if tap is valid (not a duplicate).
+   Use in your RFID Python/Node script with this logic.
+   ══════════════════════════════════════════════ */
+const RFID_DEDUP_WINDOW_MS = 5 * 60 * 1000;  /* 5 minutes */
+const rfidLastTap = {};  /* key: cardId+activityType → timestamp */
+
+function rfidIsDuplicate(cardId, activityType){
+  const key = cardId + '|' + activityType;
+  const last = rfidLastTap[key];
+  const now  = Date.now();
+  if(last && (now - last) < RFID_DEDUP_WINDOW_MS) return true;
+  rfidLastTap[key] = now;
+  return false;
+}
+
+/* Called by RFID integration when a card tap arrives via postMessage */
+window.addEventListener('message', e=>{
+  const msg = e.data;
+  if(!msg || msg.type !== 'CSA_RFID_TAP') return;
+  const { cardId, activityType, programme, xpDelta } = msg;
+  if(!cardId) return;
+  if(rfidIsDuplicate(cardId, activityType||'workshop')){
+    console.warn('CSA: duplicate RFID tap blocked', cardId, activityType);
+    window.parent.postMessage({type:'CSA_RFID_BLOCKED', cardId, reason:'duplicate_tap'},'*');
+    return;
+  }
+  /* Valid tap — find student and update XP */
+  /* The RFID sender should also include studentId or rely on Airtable lookup */
+  if(xpDelta && programme){
+    const id = programme==='AI Coding'?'ai': programme==='Robotics'?'rob':'stem';
+    const newXp = getWireScore(id) + (+xpDelta||0);
+    setWireScore(id, newXp);
+    wireAvg[id] = newXp/1400;
+    window.parent.postMessage({type:'CSA_RFID_ACCEPTED', cardId, programme, xpDelta, newXp},'*');
+  }
+});
+
+function emitSave(){
+  window.parent.postMessage({
+    type:'CSA_SAVE',
+    ai:  {enrolled:isEnrolled('ai'),  level:getStudentYear('ai'),  xp:getWireScore('ai')},
+    rob: {enrolled:isEnrolled('rob'), level:getStudentYear('rob'), xp:getWireScore('rob')},
+    stem:{enrolled:isEnrolled('stem'),level:getStudentYear('stem'),xp:getWireScore('stem')},
+  },'*');
+}
+window.addEventListener('message',e=>{
+  const msg=e.data; if(!msg) return;
+  if(msg.type==='CSA_LOAD'){
+    const load=(id,d)=>{
+      if(!d) return;
+      ENROL[id].enrolled=!!d.enrolled; ENROL[id].year=d.level||1;
+      setWireScore(id,d.xp||0);
+      uiSyncProg(id,!!d.enrolled,d.level||1,d.xp||0);
+    };
+    load('ai',msg.ai); load('rob',msg.rob); load('stem',msg.stem);
+    initWireAvg();
+  }
+});
+
+/* ── URL PARAM RESTORE (fallback) ── */
+(function(){
+  const p=new URLSearchParams(window.location.search);
+  let hasData=false;
+  ['ai','rob','stem'].forEach(id=>{
+    const v=p.get(id); if(!v) return;
+    const [enrolled,level,xp]=v.split(',').map(Number);
+    ENROL[id].enrolled=enrolled===1; ENROL[id].year=level||1;
+    setWireScore(id,xp||0);
+    uiSyncProg(id,enrolled===1,level||1,xp||0);
+    hasData=true;
+  });
+  if(hasData) initWireAvg();
+  loadStudentList();
+})();
+
+/* ── URL MODE HANDLER ── */
+(function(){
+  const params    = new URLSearchParams(window.location.search);
+  const isAdmin   = params.get('admin')==='1';
+  const studentId = (params.get('student')||'').trim();
+  const pinParam  = (params.get('pin')||'').trim();
+  const isDemo    = params.get('demo')==='1';
+
+  /* ── DEMO MODE ── */
+  if(isDemo && !isAdmin){
+    const el=document.getElementById('input-toggle');
+    const dr=document.getElementById('input-drawer');
+    if(el) el.style.display='none';
+    if(dr) dr.style.display='none';
+    setTimeout(startDemo, 300);
+    return;
+  }
+
+  /* ── HIDE TEACHER CONTROLS on non-admin ── */
+  if(!isAdmin){
+    const el=document.getElementById('input-toggle');
+    const dr=document.getElementById('input-drawer');
+    if(el) el.style.display='none';
+    if(dr) dr.style.display='none';
+  }
+
+  /* ── PARENT VIEW ── requires ?student=ID  +  PIN gate ── */
+  if(studentId && !isAdmin){
+    const gate  = document.getElementById('pin-gate');
+    const badge = document.getElementById('parent-badge');
+    const pbName= document.getElementById('pb-name');
+
+    const WORKER_URL = 'https://csa-airtable-proxy.ceoaciiadmin.workers.dev';
+
+    async function fetchAndShow(pin){
+      try{
+        const res = await fetch(
+          `${WORKER_URL}?studentId=${encodeURIComponent(studentId)}&pin=${encodeURIComponent(pin)}`
+        );
+        if(!res.ok) return false;
+        const data = await res.json();
+        if(data.error) return false;
+        /* Worker already verified PIN — apply data to spine */
+        applyData({
+          Name:                data.name,
+          StudentID:           data.sid,
+          // Programme
+          AI_Enrolled:         data.ai.enrolled,   AI_Level:   data.ai.level,   AI_XP:   data.ai.xp,   AI_Streak:   data.ai.streak,   AI_Last_Attended:   data.ai.last,
+          Rob_Enrolled:        data.rob.enrolled,  Rob_Level:  data.rob.level,  Rob_XP:  data.rob.xp,  Rob_Streak:  data.rob.streak,  Rob_Last_Attended:  data.rob.last,
+          STEM_Enrolled:       data.stem.enrolled, STEM_Level: data.stem.level, STEM_XP: data.stem.xp, STEM_Streak: data.stem.streak, STEM_Last_Attended: data.stem.last,
+          // Competency stars
+          Comp_Build:          data.comp.build,
+          Comp_Logic:          data.comp.logic,
+          Comp_Troubleshoot:   data.comp.troubleshoot,
+          Comp_Explain:        data.comp.explain,
+          Comp_Teamwork:       data.comp.teamwork,
+          Comp_Comment:        data.comment,
+          Last_Session:        data.last_session,
+        });
+        if(pbName) pbName.textContent = data.name || studentId;
+        if(badge)  badge.style.display = 'block';
+        return true;
+      }catch(e){ return false; }
+    }
+
+    /* If PIN passed in URL — attempt silent load, never show gate */
+    if(pinParam){
+      // Don't show gate at all — just fetch silently
+      // If it fails, only then fall back to gate
+      (async()=>{
+        const ok = await fetchAndShow(pinParam);
+        if(!ok && gate) gate.classList.add('show');
+      })();
+    } else {
+      /* Show PIN gate immediately */
+      if(gate) gate.classList.add('show');
+    }
+
+    /* PIN submit handler */
+    const pinBtn = document.getElementById('pin-submit');
+    const pinInp = document.getElementById('pin-input');
+    const pinErr = document.getElementById('pin-err');
+
+    async function tryPin(){
+      const pin=(pinInp.value||'').trim();
+      if(!pin){ if(pinErr) pinErr.textContent='Enter your access code'; return; }
+      if(pinErr) pinErr.textContent='Checking…';
+      if(pinBtn) pinBtn.disabled=true;
+      const ok = await fetchAndShow(pin);
+      if(ok){
+        if(gate) gate.classList.remove('show');
+        if(pinErr) pinErr.textContent='';
+      } else {
+        if(pinErr) pinErr.textContent='Incorrect code — please try again';
+        if(pinBtn) pinBtn.disabled=false;
+        if(pinInp){ pinInp.value=''; pinInp.focus(); }
+      }
+    }
+
+    if(pinBtn) pinBtn.addEventListener('click', tryPin);
+    if(pinInp) pinInp.addEventListener('keydown', e=>{ if(e.key==='Enter') tryPin(); });
+  }
+})();
+</script>
+</body>
+</html>
