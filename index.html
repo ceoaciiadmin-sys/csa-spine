@@ -1844,8 +1844,8 @@ toggle.addEventListener('click',()=>{
 
 /* ── AIRTABLE CONFIG ── */
 const AT={
-  get token(){ return localStorage.getItem('csa_at_token')||''; },
-  get base(){  return localStorage.getItem('csa_at_base')||''; },
+  get token(){ return localStorage.getItem('csa_at_token')||''; }, // ← REPLACE THIS
+  get base(){  return localStorage.getItem('csa_at_base')||'appUXxaCOeI1mJIDX'; },
   table:'Students',
   get url(){ return 'https://api.airtable.com/v0/'+this.base+'/'+this.table; },
   headers(){ return{'Authorization':'Bearer '+this.token,'Content-Type':'application/json'}; }
