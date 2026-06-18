@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CSA™ — Your Child's Progress Card</title>
+<!-- v1.3.8 dynamic airtable scratch card: absolute proxy URL, CORS proxy, no hardcoded STUDENTS array -->
 <style>
 body{margin:0;background:#060D1A;color:#fff;font-family:Arial,Helvetica,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}.card{width:100%;max-width:480px;background:linear-gradient(145deg,#0B1829,#0F2035);border:1px solid rgba(0,200,180,.35);border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)}.head{text-align:center;padding:30px 26px 18px;border-bottom:1px solid rgba(255,255,255,.08)}.eyebrow{color:#00C8B4;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}.name{font-size:30px;font-weight:900;margin:14px 0 8px}.sub{color:#C8DCF0;font-size:14px;line-height:1.55}.body{padding:24px 26px}.bar{height:7px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin:12px 0}.fill{height:100%;background:#F5A623;width:0%;transition:width 1s}.scratch{position:relative;margin-top:20px;border-radius:14px;overflow:hidden;border:1px solid rgba(0,200,180,.3)}.pinbox{background:linear-gradient(135deg,rgba(0,200,180,.1),rgba(245,166,35,.1));padding:28px;text-align:center}.pin{font-size:32px;letter-spacing:.22em;font-weight:900;color:#00C8B4}.hint{font-size:12px;color:#7DA0C0;margin-top:8px}canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.actions{padding:0 26px 28px}.btn{display:block;text-align:center;text-decoration:none;border-radius:14px;padding:15px;font-weight:800;margin-top:12px}.primary{background:#00C8B4;color:#060D1A}.secondary{border:1px solid rgba(255,255,255,.18);color:#C8DCF0}.locked{opacity:.45;pointer-events:none}.error{max-width:520px;text-align:center;color:#C8DCF0}.voucher{display:none;margin-top:16px;background:rgba(255,215,0,.08);border:1px dashed rgba(255,215,0,.45);border-radius:14px;padding:16px;text-align:center}.voucher b{color:#FFD700;font-size:22px;letter-spacing:.12em}</style>
 </head>
 <body>
 <div id="app" class="error">Loading CSA Progress Card...</div>
 <script>
-const PROXY_BASE = 'https://csa-airtable-proxy.ceoaciiadmin.workers.dev';
+const PROXY_BASE = 'https://csa-airtable-proxy.ceoaciiadmin.workers.dev'; // absolute Cloudflare proxy URL, do not change to relative path
 let student=null, revealed=false;
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function first(s){return String(s||'Student').trim().split(/\s+/)[0]||'Student'}
